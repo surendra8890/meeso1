@@ -1,0 +1,3504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SmartProperty</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg-cream: #EDE6D6;
+    --bg-panel: #E4DBC6;
+    --text-dark: #2B2A25;
+    --text-muted: #6E6A5C;
+    --accent-rust: #B36B44;
+    --white: #FFFFFF;
+    --avatar-bg: #6F7A63;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--bg-cream);
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding: 32px 64px 24px;
+  }
+
+  .logo{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  nav{
+    display:flex;
+    gap: 40px;
+    align-items:center;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+  nav a{
+    text-decoration:none;
+    color: inherit;
+    font-weight: 500;
+  }
+
+  .signin-btn{
+    background: #1E2B1F;
+    color: var(--white);
+    border: none;
+    padding: 7px 14px 7px 8px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .account-avatar{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    background:var(--avatar-bg);
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:600;
+    background-size:cover;
+    background-position:center;
+  }
+
+  .account-avatar.has-photo{
+    color:transparent;
+  }
+
+  main{
+    padding: 0 64px 48px;
+  }
+
+  .community-feed{
+    display:flex;
+    flex-direction: column;
+    gap: 28px;
+    height: 62vh;
+    min-height: 430px;
+    max-height: 620px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: #9f91c8 transparent;
+  }
+
+  .community-feed::-webkit-scrollbar{
+    width: 7px;
+  }
+
+  .community-feed::-webkit-scrollbar-track{
+    background: transparent;
+  }
+
+  .community-feed::-webkit-scrollbar-thumb{
+    background: #9f91c8;
+    border-radius: 999px;
+  }
+
+  .feed-post{
+    background: var(--white);
+    border-radius: 14px;
+    padding: 18px 20px;
+    min-height: 28vh;
+    max-height: 38vh;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(43, 42, 37, 0.04);
+  }
+
+  .community-feed-full .feed-post{
+    min-height: 30vh;
+    max-height: 40vh;
+  }
+
+  .feed-post-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .feed-post-who{
+    display:flex;
+    gap: 10px;
+  }
+
+  .feed-avatar{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .feed-avatar.buyer{ background: #5d74e8; }
+  .feed-avatar.seller{ background: #7650c9; }
+
+  .feed-name-row{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .feed-name{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .role-pill{
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  .role-pill.buyer{ background: #E7EBDF; color: #4C5A3E; }
+  .role-pill.seller{ background: #F2E2D3; color: #8A5A3B; }
+
+  .feed-location{
+    font-size: 12px;
+    color: #69739a;
+    margin-top: 2px;
+  }
+
+  .feed-thumb{
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .community-media-shell{
+    margin: 10px 0;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f1f4f8;
+    border: 1px solid #dce3ec;
+  }
+
+  .community-media-viewport{
+    position: relative;
+    width: 100%;
+    min-height: 84px;
+    max-height: 84px;
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    background: #f1f4f8;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .community-media-slide{
+    display: block;
+    position: relative;
+    flex: 0 0 120px;
+    width: 120px;
+    height: 74px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #e9eef4;
+  }
+
+  .community-media-slide.active{
+    display: block;
+  }
+
+  .community-media-slide img,
+  .community-media-slide video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #e9eef4;
+  }
+
+  .community-media-slide video {
+    background: #e9eef4;
+  }
+
+  .community-media-overlay{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    pointer-events: none;
+    padding: 12px 12px 10px;
+    background: transparent;
+  }
+
+  .community-media-controls,
+  .community-media-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .community-media-btn,
+  .community-media-nav button {
+    border: none;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--text-dark);
+    font-size: 12px;
+    padding: 7px 10px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(35, 45, 60, 0.14);
+  }
+
+  .community-media-nav button {
+    background: #ffffff;
+    color: #241b47;
+    border: 1px solid #d5dce6;
+  }
+
+  .community-media-index {
+    color: #241b47;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: none;
+    pointer-events: none;
+  }
+
+  .community-media-viewport .community-media-overlay{
+    padding: 5px;
+  }
+
+  .community-media-viewport .community-media-controls{
+    gap: 3px;
+  }
+
+  .community-media-viewport .community-media-btn{
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+
+  .feed-text{
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+
+  .dynamic-community-post .feed-text{
+    border-left: 3px solid #cfc1ff;
+    padding: 2px 0 2px 16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.45;
+    margin: 12px 0 14px;
+  }
+
+  .dynamic-community-post{
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    flex: 0 0 auto;
+    position: relative;
+    isolation: isolate;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .feed-chips{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .feed-chip{
+    font-size: 12px;
+    color: var(--text-dark);
+    background: var(--bg-cream);
+    border: 1px solid rgba(43,42,37,0.12);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .community-detail-grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 12px 0 16px;
+  }
+
+  .community-detail-tile{
+    min-width: 0;
+    min-height: 60px;
+    padding: 9px 12px;
+    border-radius: 10px;
+  }
+
+  .community-detail-tile.budget{ background: #d8f6e8; color: #087858; }
+  .community-detail-tile.type{ background: #dce8ff; color: #315bb5; }
+  .community-detail-tile.bedrooms{ background: #f7e1f2; color: #bd367d; }
+
+  .community-detail-label{
+    display: block;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .community-detail-value{
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .community-post-meta{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid #e3dcf6;
+    color: #70739d;
+    font-size: 12px;
+  }
+
+  .community-post-meta .feed-btn{
+    background: #1598b8;
+    color: var(--white);
+    border: none;
+    padding: 9px 16px;
+  }
+
+  .community-post-time{
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .media-viewer{
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(18, 14, 30, 0.88);
+  }
+
+  .media-viewer-content{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: min(920px, 94vw);
+    max-height: 88vh;
+  }
+
+  .media-viewer-content img,
+  .media-viewer-content video{
+    display: block;
+    max-width: 94vw;
+    max-height: 82vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #000;
+  }
+
+  .media-viewer-close{
+    position: absolute;
+    top: -42px;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: #211a3b;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .feed-actions{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .feed-btn{
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    border: 1px solid rgba(43,42,37,0.18);
+    background: var(--white);
+    color: var(--text-dark);
+  }
+
+  .feed-btn:hover{ background: var(--bg-cream); }
+
+  .feed-btn.primary{
+    background: #1E2B1F;
+    color: var(--white);
+    border: none;
+  }
+  .feed-btn.primary:hover{ background: #14201A; }
+
+  .feed-btn.sent{
+    background: var(--bg-cream);
+    color: var(--text-muted);
+    border: 1px solid rgba(43,42,37,0.12);
+    cursor: default;
+  }
+  .feed-btn.sent:hover{ background: var(--bg-cream); }
+
+  @media (max-width: 640px){
+    .feed-post-head{ flex-direction: column; }
+    .feed-thumb{ width: 100%; height: 160px; }
+    .dynamic-community-post .feed-post-head{ flex-direction: row; align-items: center; }
+    .community-detail-grid{ grid-template-columns: 1fr; }
+    .community-detail-tile{ min-height: 58px; }
+    .community-media-slide img,
+    .community-media-slide video{ height: 100%; }
+  }
+
+  .community-panel{
+    background: var(--bg-panel);
+    border-radius: 28px;
+    padding: 36px 44px 44px;
+  }
+
+  .panel-top{
+    display:flex;
+    justify-content: space-between;
+    align-items:flex-end;
+    margin-bottom: 32px;
+  }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .panel-title{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 46px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .view-community{
+    font-size: 15px;
+    color: var(--text-dark);
+    text-decoration: none;
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .cards{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .card{
+    background: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .card-head{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .avatar{
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--avatar-bg);
+    color: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .card-name{
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+  .card-role{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .card p{
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dark);
+  }
+
+  .hero{
+    margin-top: 56px;
+  }
+
+  .hero h1{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 84px;
+    line-height: 1.05;
+    max-width: 950px;
+    color: var(--text-dark);
+  }
+
+  .hero-eyebrow{
+    margin-top: 28px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    color: var(--accent-rust);
+  }
+
+  .hero-desc{
+    margin-top: 18px;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    max-width: 620px;
+  }
+
+  .search-bar{
+    margin-top: 48px;
+    background: var(--white);
+    border-radius: 999px;
+    padding: 10px 10px 10px 28px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1100px;
+  }
+
+  .search-bar-left{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    font-size: 16px;
+    color: var(--text-dark);
+    flex: 1;
+  }
+
+  .search-bar-left .sparkle{
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  .search-bar-left .placeholder-text{
+    color: var(--text-muted);
+  }
+
+  .search-bar-left .placeholder-text strong{
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+
+  .search-btn{
+    background: #1E2B1F;
+    color: var(--white);
+    border: none;
+    padding: 16px 28px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px){
+    .search-bar{
+      flex-direction: column;
+      align-items: stretch;
+      border-radius: 24px;
+      padding: 20px;
+      gap: 16px;
+    }
+    .search-btn{ width: 100%; }
+  }
+
+  .atmosphere{
+    margin-top: 28px;
+    background: #1E2B1F;
+    border-radius: 28px;
+    padding: 36px 44px 44px;
+  }
+
+  .atmosphere .eyebrow{
+    color: #A8B79A;
+  }
+
+  .atmosphere .panel-title{
+    color: var(--white);
+  }
+
+  .atmosphere-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .atmosphere-card{
+    position: relative;
+    aspect-ratio: 4/3.6;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .atmosphere-card-bg{
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: transform;
+    transform: scale(1);
+  }
+
+  .atmosphere-card:hover .atmosphere-card-bg{
+    transform: scale(1.12);
+  }
+
+  .atmosphere-card::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.65) 100%);
+  }
+
+  .atmosphere-label{
+    position: absolute;
+    left: 24px;
+    bottom: 20px;
+    z-index: 2;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  @media (max-width: 900px){
+    .atmosphere-grid{ grid-template-columns: 1fr; }
+    .atmosphere{ padding: 32px 24px 40px; }
+  }
+
+  .listings{
+    margin-top: 56px;
+    background: var(--bg-panel);
+    border-radius: 28px;
+    padding: 36px 44px 44px;
+  }
+
+  .listings-top{
+    display:flex;
+    justify-content: space-between;
+    align-items:flex-end;
+    margin-bottom: 32px;
+  }
+
+  .listings-count{
+    font-size: 15px;
+    color: var(--text-dark);
+    white-space: nowrap;
+  }
+
+  .property-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .property-card{
+    display:flex;
+    flex-direction: column;
+  }
+
+  .property-photo{
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 18px;
+  }
+
+  .photo-courtyard{
+    background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&auto=format&fit=crop');
+  }
+  .photo-terrace{
+    background-image: url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80&auto=format&fit=crop');
+  }
+  .photo-garden{
+    background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80&auto=format&fit=crop');
+  }
+
+  .property-name{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .property-location{
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .property-meta{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+
+  .property-price{
+    font-weight: 600;
+  }
+
+  .property-beds{
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 900px){
+    .property-grid{ grid-template-columns: 1fr; }
+    .listings{ padding: 32px 24px 40px; }
+  }
+
+  .advisor-cta{
+    margin-top: 56px;
+    background: var(--bg-panel);
+    border-radius: 28px;
+    padding: 48px 56px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    gap: 32px;
+  }
+
+  .advisor-title{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 34px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-top: 12px;
+  }
+
+  .advisor-btn{
+    background: #1E2B1F;
+    color: var(--white);
+    border: none;
+    padding: 18px 30px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  footer{
+    margin-top: 32px;
+    padding: 32px 64px 40px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+  }
+
+  .footer-left{
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+
+  .footer-left .brand{
+    font-weight: 600;
+  }
+
+  .footer-left .divider{
+    color: var(--text-muted);
+    margin: 0 6px;
+  }
+
+  .footer-left .tagline{
+    color: var(--text-muted);
+  }
+
+  .footer-year{
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 900px){
+    .advisor-cta{
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 32px 24px;
+    }
+    footer{
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px;
+      align-items: flex-start;
+    }
+  }
+
+  /* Sign-in modal */
+  .modal-overlay{
+    display:none;
+    position: fixed;
+    inset: 0;
+    background: rgba(237, 230, 214, 0.92);
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    z-index: 999;
+  }
+
+  .modal-overlay.active{
+    display:flex;
+  }
+
+  .modal-card{
+    width: 100%;
+    max-width: 460px;
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 48px 40px 40px;
+    color: var(--text-dark);
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  }
+
+  .modal-close{
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover{ color: var(--text-dark); }
+
+  .modal-brand{
+    font-size: 13px;
+    letter-spacing: 4px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .modal-title{
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+  }
+
+  .modal-subtitle{
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  .modal-field{
+    text-align: left;
+    margin-bottom: 20px;
+  }
+
+  .modal-field label{
+    display:block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .modal-field input{
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: var(--bg-cream);
+    color: var(--text-dark);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+
+  .modal-field input::placeholder{ color: var(--text-muted); }
+  .modal-field input:focus{ border-color: var(--text-dark); }
+
+  .modal-login-btn{
+    width: 100%;
+    padding: 16px;
+    margin-top: 8px;
+    background: #1E2B1F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .modal-login-btn:hover{ background: #14201A; }
+
+  .modal-create{
+    display:block;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .modal-create:hover{ color: var(--text-dark); }
+
+  .modal-signin-link{
+    display:block;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .modal-signin-link:hover{ color: var(--text-dark); }
+
+  .role-options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:24px;
+  }
+
+  .role-option{
+    border:1px solid rgba(43,42,37,0.16);
+    background:var(--bg-cream);
+    color:var(--text-dark);
+    border-radius:12px;
+    padding:18px 12px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .role-option:hover{ background:var(--bg-panel); }
+
+  .account-sidebar-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(43,42,37,0.18);
+    z-index:1100;
+  }
+
+  .account-sidebar-overlay.active{ display:block; }
+
+  .account-sidebar{
+    position:absolute;
+    top:0;
+    right:0;
+    width:min(360px, 92vw);
+    height:100%;
+    padding:32px 26px;
+    background:var(--white);
+    box-shadow:-18px 0 50px rgba(43,42,37,0.14);
+  }
+
+  .account-sidebar-close{
+    position:absolute;
+    top:20px;
+    right:22px;
+    border:0;
+    background:none;
+    color:var(--text-muted);
+    font-size:24px;
+    cursor:pointer;
+  }
+
+  .account-sidebar-brand{
+    margin:10px 0 42px;
+    color:var(--text-muted);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:3px;
+  }
+
+  .account-sidebar h2{
+    margin-bottom:6px;
+    font-family:'Playfair Display', serif;
+    font-size:30px;
+    font-weight:500;
+  }
+
+  .account-sidebar-email{
+    margin-bottom:34px;
+    color:var(--text-muted);
+    font-size:14px;
+    overflow-wrap:anywhere;
+  }
+
+  .account-sidebar-avatar{
+    width:72px;
+    height:72px;
+    margin-bottom:16px;
+    border-radius:50%;
+    background:var(--avatar-bg);
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    font-weight:600;
+    background-size:cover;
+    background-position:center;
+  }
+
+  .account-sidebar-avatar.has-photo{
+    color:transparent;
+  }
+
+  .account-sidebar-role,
+  .account-sidebar-intro{
+    color:var(--text-muted);
+    font-size:13px;
+  }
+
+  .account-sidebar-role{
+    margin-top:-26px;
+    margin-bottom:28px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+
+  .account-sidebar-intro{
+    margin-top:-22px;
+    margin-bottom:34px;
+    line-height:1.5;
+  }
+
+  .account-sidebar-posts{
+    margin:8px 0 24px;
+    max-height:260px;
+    overflow:auto;
+  }
+
+  .account-sidebar-posts-title{
+    margin-bottom:10px;
+    color:var(--text-muted);
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+
+  .account-post-item{
+    padding:12px 0;
+    border-top:1px solid rgba(43,42,37,0.12);
+  }
+
+  .account-post-title{
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .account-post-meta{
+    margin-top:4px;
+    color:var(--text-muted);
+    font-size:12px;
+  }
+
+  .account-post-actions{
+    display:flex;
+    gap:8px;
+    margin-top:9px;
+  }
+
+  .account-post-action{
+    padding:6px 10px;
+    border:1px solid rgba(43,42,37,0.16);
+    border-radius:7px;
+    background:transparent;
+    color:var(--text-dark);
+    font-size:12px;
+    cursor:pointer;
+  }
+
+  .account-post-action.delete{ color:#B3453B; border-color:#B3453B; }
+
+  .account-sidebar-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .account-sidebar-action{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid rgba(43,42,37,0.16);
+    border-radius:10px;
+    background:var(--bg-cream);
+    color:var(--text-dark);
+    font:500 14px 'Inter', sans-serif;
+    text-align:left;
+    cursor:pointer;
+  }
+
+  .account-sidebar-action:hover{ background:var(--bg-panel); }
+
+  .account-sidebar-action.logout{
+    margin-top:10px;
+    border-color:#B3453B;
+    background:transparent;
+    color:#B3453B;
+  }
+
+  #sellView{ display:none; }
+  #buyView{ display:none; }
+  #communityView{ display:none; }
+
+  .sell-main{
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 48px 64px 40px;
+  }
+
+  .sell-main h1{
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 56px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--text-dark);
+  }
+
+  .sell-subtitle{
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    max-width: 700px;
+    margin-bottom: 48px;
+  }
+
+  .sell-profile-card{
+    background: var(--bg-panel);
+    border-radius: 20px;
+    padding: 32px 36px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .sell-profile-left{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+  }
+
+  .sell-avatar{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1E2B1F;
+    color: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .sell-profile-title{
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+  }
+
+  .sell-profile-desc{
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 560px;
+  }
+
+  .edit-profile-btn{
+    background: var(--bg-cream);
+    border: 1px solid rgba(43,42,37,0.18);
+    color: var(--text-dark);
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .profile-editor{
+    display:none;
+    margin-top:24px;
+    padding-top:24px;
+    border-top:1px solid rgba(43,42,37,0.12);
+  }
+
+  .profile-editor.active{ display:block; }
+
+  .profile-editor-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .profile-photo-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+
+  .profile-photo-input{
+    font-size:13px;
+    color:var(--text-muted);
+  }
+
+  .sell-avatar.has-photo{
+    background-size:cover;
+    background-position:center;
+    color:transparent;
+  }
+
+  .sell-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .sell-panel{
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+  }
+
+  .sell-panel-heading{
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 28px;
+    color: var(--text-dark);
+  }
+
+  .sell-form-input, .sell-form-textarea{
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(43,42,37,0.18);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    outline: none;
+  }
+
+  .sell-form-input::placeholder, .sell-form-textarea::placeholder{
+    color: #A8A398;
+  }
+
+  .sell-form-input:focus, .sell-form-textarea:focus{
+    border-color: var(--text-dark);
+  }
+
+  .sell-form-textarea{
+    resize: vertical;
+    min-height: 140px;
+    margin-bottom: 0;
+  }
+
+  .location-tools{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:-8px 0 20px;
+  }
+
+  .location-tool-btn{
+    background:var(--bg-cream);
+    border:1px solid rgba(43,42,37,0.18);
+    color:var(--text-dark);
+    padding:9px 14px;
+    border-radius:10px;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  .location-tool-btn:hover{ background:var(--white); }
+
+  .location-status{
+    flex-basis:100%;
+    min-height:18px;
+    font-size:13px;
+    color:var(--text-muted);
+  }
+
+  .community-empty{
+    padding:28px 20px;
+    border:1px dashed rgba(43,42,37,0.2);
+    border-radius:14px;
+    color:var(--text-muted);
+    text-align:center;
+    font-size:14px;
+  }
+
+  .sell-upload-panel{
+    background: var(--bg-panel);
+    border-radius: 20px;
+    padding: 60px 40px;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+
+  .sell-upload-icon{
+    font-size: 34px;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+  }
+
+  .sell-upload-title{
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--text-dark);
+  }
+
+  .sell-upload-desc{
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 340px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .sell-media-preview{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    width:100%;
+    margin-top:16px;
+  }
+
+  .sell-media-preview img,
+  .sell-media-preview video{
+    width:100%;
+    aspect-ratio:1;
+    object-fit:cover;
+    border-radius:8px;
+    background:var(--bg-cream);
+  }
+
+  .choose-files-btn{
+    background: var(--white);
+    border: 1px solid rgba(43,42,37,0.18);
+    color: var(--text-dark);
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .sell-bottom-bar{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1E2B1F;
+    padding: 22px 64px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 20px;
+    z-index: 50;
+  }
+
+  .sell-bottom-bar-text{
+    color: var(--white);
+    font-size: 15px;
+  }
+
+  .sell-bottom-bar-actions{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+  }
+
+  .wake-btn{
+    background: transparent;
+    border: 1px solid #4E9E7E;
+    color: #6FCFA8;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .save-btn{
+    background: var(--white);
+    color: #1E2B1F;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px){
+    .sell-main{ padding: 32px 24px 20px; }
+    .sell-main h1{ font-size: 36px; }
+    .sell-grid{ grid-template-columns: 1fr; }
+    .sell-profile-card{ flex-direction: column; align-items: flex-start; }
+    .sell-bottom-bar{
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 18px 24px;
+      gap: 12px;
+    }
+  }
+
+  .community-main{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 20px 56px;
+  }
+
+  .community-filter-bar{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .community-filter-btn{
+    border: 1px solid #ddd4f2;
+    border-radius: 999px;
+    padding: 11px 20px;
+    background: #fff;
+    color: #625a87;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .community-filter-btn.active,
+  .community-filter-btn:hover{
+    background: #211a3b;
+    border-color: #211a3b;
+    color: #fff;
+  }
+
+  .community-match-banner{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px 16px;
+    border: 1px solid #f0d8d2;
+    border-radius: 12px;
+    background: linear-gradient(100deg, #f9efff, #ffe5d5);
+    color: #16122c;
+    font-size: 14px;
+  }
+
+  .community-match-banner span:first-child{
+    color: #0a9bbd;
+    font-size: 20px;
+  }
+
+  .community-main h1{
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 32px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .community-main .sell-subtitle{
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  .community-feed-full{
+    display:flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .community-feed-full .dynamic-community-post{
+    border: 1px solid #ddd6f3;
+    border-radius: 14px;
+    padding: 20px 24px 18px;
+    flex: 0 0 auto;
+  }
+
+  .community-feed .dynamic-community-post{
+    border: 1px solid #ddd6f3;
+    border-radius: 14px;
+    padding: 20px 24px 18px;
+    flex: 0 0 auto;
+  }
+
+  .community-intent-pill{
+    margin-left: auto;
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: #7540e8;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .ask-aster{
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: #1E2B1F;
+    color: var(--white);
+    border: none;
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    cursor:pointer;
+  }
+
+  @media (max-width: 900px){
+    header, main{ padding-left: 24px; padding-right: 24px; }
+    .cards{ grid-template-columns: 1fr; }
+    .hero h1{ font-size: 48px; }
+    .panel-title{ font-size: 32px; }
+    nav{ gap: 20px; }
+  }
+
+  @media (max-width: 640px){
+    header{
+      padding: 20px 16px 16px;
+    }
+
+    .logo{
+      font-size: 24px;
+    }
+
+    nav{
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    nav a{
+      display: none;
+    }
+
+    main{
+      padding: 0 12px 32px;
+    }
+
+    .community-panel{
+      border-radius: 18px;
+      padding: 24px 14px 20px;
+    }
+
+    .panel-top{
+      align-items:flex-start;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:22px;
+    }
+
+    .panel-title{
+      font-size: 30px;
+      line-height: 1.08;
+    }
+
+    .community-feed{
+      height: 65vh;
+      min-height: 420px;
+      max-height: 600px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 0;
+    }
+
+    .dynamic-community-post,
+    .feed-post{
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .community-detail-grid{
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .community-media-grid{
+      gap: 8px;
+    }
+
+    .community-media-tile{
+      width: 100%;
+      min-height: 180px;
+    }
+
+    .community-post-footer{
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .community-profile-btn,
+    .feed-btn{
+      min-height: 42px;
+    }
+
+    .community-post-engagement{
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .community-action-btn{
+      flex: 1 1 calc(50% - 6px);
+      min-height: 40px;
+    }
+
+    .sell-main,
+    .community-main{
+      padding: 24px 12px 40px;
+    }
+
+    .community-main h1,
+    .sell-main h1{
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .community-filter-bar{ overflow-x: auto; padding-bottom: 2px; }
+    .community-filter-btn{ flex: 0 0 auto; }
+    .community-match-banner{ align-items: flex-start; }
+
+    .community-feed-full{
+      gap: 12px;
+    }
+
+    .sell-grid,
+    .cards,
+    .property-grid,
+    .atmosphere-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .sell-bottom-bar{
+      align-items: stretch;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .sell-bottom-bar-actions,
+    .sell-bottom-bar-actions .save-btn{
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showHome()" style="cursor:pointer;">SmartProperty</div>
+  <nav>
+    <a href="#">Journal</a>
+    <button class="signin-btn" id="signInNavBtn" onclick="openSignIn()">Sign In</button>
+  </nav>
+</header>
+
+<div class="account-sidebar-overlay" id="accountSidebar" onclick="closeAccountSidebar(event)">
+  <aside class="account-sidebar" onclick="event.stopPropagation()">
+    <button class="account-sidebar-close" type="button" aria-label="Close account menu" onclick="closeAccountSidebar()">&times;</button>
+    <div class="account-sidebar-brand">MY ACCOUNT</div>
+    <div class="account-sidebar-avatar" id="accountSidebarAvatar">AC</div>
+    <h2 id="accountSidebarName">Your account</h2>
+    <div class="account-sidebar-email" id="accountSidebarEmail"></div>
+    <div class="account-sidebar-role" id="accountSidebarRole"></div>
+    <div class="account-sidebar-intro" id="accountSidebarIntro"></div>
+    <div class="account-sidebar-posts" id="accountSidebarPosts"></div>
+    <div class="account-sidebar-actions">
+      <button class="account-sidebar-action" type="button" onclick="editAccountProfile()">Edit profile</button>
+      <button class="account-sidebar-action" type="button" onclick="createAccountPost()">Create post</button>
+      <button class="account-sidebar-action logout" type="button" onclick="handleLogout()">Log out</button>
+    </div>
+  </aside>
+</div>
+
+<div id="homeView">
+<main>
+  <section class="community-panel">
+    <div class="panel-top">
+      <div>
+        <div class="eyebrow">BUYER & SELLER COMMUNITY</div>
+        <div class="panel-title">Where buyers meet sellers.</div>
+      </div>
+      <a href="#" class="view-community" onclick="showCommunity(); return false;">View community ↗</a>
+    </div>
+
+    <div class="community-feed">
+
+      <!-- BUYER POST -->
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar buyer">RS</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Rahul Sharma</span>
+                <span class="role-pill buyer">Buyer</span>
+              </div>
+              <div class="feed-location">Hyderabad</div>
+            </div>
+          </div>
+        </div>
+        <p class="feed-text">"Looking for a 2BHK apartment in Gachibowli."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Budget: ₹60–75 Lakhs</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 2 BHK</span>
+          <span class="feed-chip">Purpose: Buy</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showBuy()">View Profile</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <!-- SELLER POST -->
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar seller">AP</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Amit Properties</span>
+                <span class="role-pill seller">Seller</span>
+              </div>
+              <div class="feed-location">Hyderabad</div>
+            </div>
+          </div>
+          <div class="feed-thumb photo-terrace"></div>
+        </div>
+        <p class="feed-text">"2BHK apartment available in Gachibowli."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Price: ₹70 Lakhs</span>
+          <span class="feed-chip">Area: 1250 sq.ft</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 2 BHK</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showSell()">View Property</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <!-- BUYER POST -->
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar buyer">RM</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Rhea Malhotra</span>
+                <span class="role-pill buyer">Buyer</span>
+              </div>
+              <div class="feed-location">Mumbai</div>
+            </div>
+          </div>
+        </div>
+        <p class="feed-text">"Looking for a bright three-bedroom with a terrace or generous balcony. A quiet street and easy access to the sea matter most."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Budget: ₹4.5–5.5 Cr</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 3 BHK</span>
+          <span class="feed-chip">Purpose: Buy</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showBuy()">View Profile</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <!-- SELLER POST -->
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar seller">DA</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Dev Arora</span>
+                <span class="role-pill seller">Seller</span>
+              </div>
+              <div class="feed-location">New Delhi</div>
+            </div>
+          </div>
+          <div class="feed-thumb photo-courtyard"></div>
+        </div>
+        <p class="feed-text">"Preparing a family courtyard home for its next chapter. Gathering the right photographs and would value buyer perspectives on outdoor living."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Price: ₹8.40 Cr</span>
+          <span class="feed-chip">Area: 3800 sq.ft</span>
+          <span class="feed-chip">Property Type: Independent House</span>
+          <span class="feed-chip">Bedrooms: 3 BHK</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showSell()">View Property</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="hero">
+    <h1>Find Your Perfect Home with AI</h1>
+    <div class="hero-eyebrow">INDIA'S SMARTEST AI REAL ESTATE PLATFORM</div>
+    <p class="hero-desc">Thoughtful homes in India's most characterful neighbourhoods—selected for light, landscape, and the life they invite.</p>
+
+    <div class="search-bar">
+      <div class="search-bar-left">
+        <span class="sparkle">✦</span>
+        <span class="placeholder-text"><strong>Ask AI...</strong> "Find me a 3BHK under ₹80L near metro with good schools."</span>
+      </div>
+      <button class="search-btn" type="button" onclick="handleDeepAction('AI search')">Search with AI</button>
+    </div>
+  </section>
+
+  <section class="atmosphere">
+    <div class="eyebrow">EXPLORE BY ATMOSPHERE</div>
+    <div class="panel-title">Every neighbourhood has its own rhythm.</div>
+
+    <div class="atmosphere-grid">
+      <div class="atmosphere-card">
+        <div class="atmosphere-card-bg photo-courtyard"></div>
+        <div class="atmosphere-label">Lutyens' Delhi</div>
+      </div>
+      <div class="atmosphere-card">
+        <div class="atmosphere-card-bg photo-terrace"></div>
+        <div class="atmosphere-label">Bandra West</div>
+      </div>
+      <div class="atmosphere-card">
+        <div class="atmosphere-card-bg photo-garden"></div>
+        <div class="atmosphere-label">Kochi Fort</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="listings">
+    <div class="listings-top">
+      <div>
+        <div class="eyebrow">A CONSIDERED SHORTLIST</div>
+        <div class="panel-title">Homes with a point of view</div>
+      </div>
+      <div class="listings-count">12 homes available</div>
+    </div>
+
+    <div class="property-grid">
+      <div class="property-card">
+        <div class="property-photo photo-courtyard"></div>
+        <div class="property-name">Courtyard House</div>
+        <div class="property-location">Nizamuddin East, New Delhi</div>
+        <div class="property-meta">
+          <span class="property-price">₹8.40 Cr</span>
+          <span class="property-beds">3 bed · 3 bath</span>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="property-photo photo-terrace"></div>
+        <div class="property-name">Terrace Apartment</div>
+        <div class="property-location">Khar West, Mumbai</div>
+        <div class="property-meta">
+          <span class="property-price">₹5.20 Cr</span>
+          <span class="property-beds">3 bed · 3 bath</span>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="property-photo photo-garden"></div>
+        <div class="property-name">Garden Residence</div>
+        <div class="property-location">Alwarpet, Chennai</div>
+        <div class="property-meta">
+          <span class="property-price">₹4.95 Cr</span>
+          <span class="property-beds">3 bed · 3 bath</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="advisor-cta">
+    <div>
+      <div class="eyebrow">LOOKING FOR SOMETHING PARTICULAR?</div>
+      <div class="advisor-title">The right home may not be on the market yet.</div>
+    </div>
+    <button class="advisor-btn" type="button" onclick="handleDeepAction('Advisor contact')">Speak with an advisor</button>
+  </section>
+</main>
+</div>
+
+<div id="sellView">
+  <main class="sell-main">
+    <h1>Prepare your home for its next chapter.</h1>
+    <p class="sell-subtitle">Start with the essentials. Your advisor will help refine the story, photography, and positioning before it reaches the right audience.</p>
+
+    <div class="profile-editor" id="sellerProfileEditor">
+      <div class="profile-photo-row">
+        <label for="seller-profile-photo">Profile photo</label>
+        <input class="profile-photo-input" type="file" id="seller-profile-photo" accept="image/*" onchange="handleProfilePhotoChange('seller', this)">
+      </div>
+      <input type="text" class="sell-form-input" id="seller-profile-name" placeholder="Your name">
+      <textarea class="sell-form-textarea" id="seller-profile-intro" placeholder="A short introduction for your advisor..."></textarea>
+      <div class="profile-editor-actions">
+        <button class="edit-profile-btn" type="button" onclick="toggleSellerProfileEditor()">Cancel</button>
+        <button class="save-btn" type="button" onclick="saveSellerProfile()">Save profile</button>
+      </div>
+    </div>
+
+    <div class="sell-grid" id="sellerPostSection">
+      <div class="sell-panel">
+        <div class="sell-panel-heading">Property essentials</div>
+        <input type="text" class="sell-form-input" id="sell-address" placeholder="Property address">
+        <div class="location-tools">
+          <button class="location-tool-btn" type="button" onclick="searchSellerLocationOnGoogle()">Search on Google Maps</button>
+          <button class="location-tool-btn" type="button" onclick="useSellerLiveLocation()">Use live location</button>
+          <div class="location-status" id="sellerLocationStatus" aria-live="polite"></div>
+        </div>
+        <input type="number" class="sell-form-input" id="sell-price" placeholder="Indicative asking price">
+        <input type="number" class="sell-form-input" id="sell-area" placeholder="Area (sq.ft)">
+        <input type="text" class="sell-form-input" id="sell-type" placeholder="Property type (e.g. Apartment)">
+        <input type="text" class="sell-form-input" id="sell-bedrooms" placeholder="Bedrooms (e.g. 3 BHK)">
+        <textarea class="sell-form-textarea" id="sell-description" placeholder="A short story about your home..."></textarea>
+        <div id="sellFormError" style="color:#B3453B; font-size:13px; margin-top:16px; display:none;"></div>
+      </div>
+
+      <div class="sell-upload-panel">
+        <div class="sell-upload-icon">&#9729;&#8593;</div>
+        <div class="sell-upload-title">Add property photos &amp; video</div>
+        <div class="sell-upload-desc" id="sellUploadDesc">Photos and videos up to 50MB each.</div>
+        <input type="file" id="sell-media" accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.webm" multiple style="display:none;">
+        <button class="choose-files-btn" onclick="document.getElementById('sell-media').click()">Choose files</button>
+        <div id="sellFileList" style="font-size:13px; color:var(--text-muted); margin-top:14px;"></div>
+        <div class="sell-media-preview" id="sellMediaPreview"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="sell-bottom-bar">
+    <div class="sell-bottom-bar-text" id="sellBottomBarText">Sign in, then fill in the essentials above.</div>
+    <div class="sell-bottom-bar-actions">
+      <button class="save-btn" id="sellSaveBtn" onclick="handleSaveSeller()">Save essentials</button>
+    </div>
+  </div>
+</div>
+
+<div id="buyView">
+  <main class="sell-main">
+    <h1>Tell us what home means to you.</h1>
+    <p class="sell-subtitle">Share your preferences and budget. Your advisor will curate a shortlist of homes that actually fit your life.</p>
+
+    <div class="profile-editor" id="buyerProfileEditor">
+      <div class="profile-photo-row">
+        <label for="buyer-profile-photo">Profile photo</label>
+        <input class="profile-photo-input" type="file" id="buyer-profile-photo" accept="image/*" onchange="handleProfilePhotoChange('buyer', this)">
+      </div>
+      <input type="text" class="sell-form-input" id="buyer-profile-name" placeholder="Your name">
+      <textarea class="sell-form-textarea" id="buyer-profile-intro" placeholder="A short introduction about what you are looking for..."></textarea>
+      <div class="profile-editor-actions">
+        <button class="edit-profile-btn" type="button" onclick="toggleBuyerProfileEditor()">Cancel</button>
+        <button class="save-btn" type="button" onclick="saveBuyerProfile()">Save profile</button>
+      </div>
+    </div>
+
+    <div class="sell-grid" id="buyerPostSection">
+      <div class="sell-panel">
+        <div class="sell-panel-heading">Property preferences</div>
+        <input type="text" class="sell-form-input" id="buy-location" placeholder="Preferred locations">
+        <div class="location-tools">
+          <button class="location-tool-btn" type="button" onclick="searchBuyerLocationOnGoogle()">Search on Google Maps</button>
+          <button class="location-tool-btn" type="button" onclick="useBuyerLiveLocation()">Use live location</button>
+          <div class="location-status" id="buyerLocationStatus" aria-live="polite"></div>
+        </div>
+        <input type="number" class="sell-form-input" id="buy-budget-min" placeholder="Budget min (₹)">
+        <input type="number" class="sell-form-input" id="buy-budget-max" placeholder="Budget max (₹)">
+        <input type="text" class="sell-form-input" id="buy-type" placeholder="Property type (e.g. Apartment)">
+        <input type="text" class="sell-form-input" id="buy-bedrooms" placeholder="Bedrooms (e.g. 2 BHK)">
+        <select class="sell-form-input" id="buy-purpose">
+          <option value="Buy">Buy</option>
+          <option value="Rent">Rent</option>
+        </select>
+        <textarea class="sell-form-textarea" id="buy-description" placeholder="What matters most in your next home..."></textarea>
+        <div id="buyFormError" style="color:#B3453B; font-size:13px; margin-top:16px; display:none;"></div>
+      </div>
+
+      <div class="sell-upload-panel">
+        <div class="sell-upload-icon">&#9729;&#8593;</div>
+        <div class="sell-upload-title">Add inspiration photos</div>
+        <div class="sell-upload-desc">Optional — helps sellers understand your taste.</div>
+        <input type="file" id="buy-media" accept="image/*" multiple style="display:none;">
+        <button class="choose-files-btn" onclick="document.getElementById('buy-media').click()">Choose files</button>
+        <div id="buyFileList" style="font-size:13px; color:var(--text-muted); margin-top:14px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="sell-bottom-bar">
+    <div class="sell-bottom-bar-text" id="buyBottomBarText">Sign in, then fill in your preferences above.</div>
+    <div class="sell-bottom-bar-actions">
+      <button class="save-btn" id="buySaveBtn" onclick="handleSaveBuyer()">Save preferences</button>
+    </div>
+  </div>
+</div>
+
+<div id="communityView">
+  <main class="community-main">
+    <div class="community-filter-bar" role="tablist" aria-label="Community post filters">
+      <button class="community-filter-btn active" type="button" data-community-filter="all" onclick="filterCommunityPosts('all', this)">All posts</button>
+      <button class="community-filter-btn" type="button" data-community-filter="buyer" onclick="filterCommunityPosts('buyer', this)">Buyers</button>
+      <button class="community-filter-btn" type="button" data-community-filter="seller" onclick="filterCommunityPosts('seller', this)">Sellers</button>
+    </div>
+
+    <div class="community-match-banner"><span>&#10148;</span><span>These posts may be a good match. Take a closer look.</span></div>
+
+    <div class="community-feed-full">
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar buyer">RS</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Rahul Sharma</span>
+                <span class="role-pill buyer">Buyer</span>
+              </div>
+              <div class="feed-location">Hyderabad</div>
+            </div>
+          </div>
+        </div>
+        <p class="feed-text">"Looking for a 2BHK apartment in Gachibowli."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Budget: ₹60–75 Lakhs</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 2 BHK</span>
+          <span class="feed-chip">Purpose: Buy</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showBuy()">View Profile</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar seller">AP</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Amit Properties</span>
+                <span class="role-pill seller">Seller</span>
+              </div>
+              <div class="feed-location">Hyderabad</div>
+            </div>
+          </div>
+          <div class="feed-thumb photo-terrace"></div>
+        </div>
+        <p class="feed-text">"2BHK apartment available in Gachibowli."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Price: ₹70 Lakhs</span>
+          <span class="feed-chip">Area: 1250 sq.ft</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 2 BHK</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showSell()">View Property</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar buyer">RM</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Rhea Malhotra</span>
+                <span class="role-pill buyer">Buyer</span>
+              </div>
+              <div class="feed-location">Mumbai</div>
+            </div>
+          </div>
+        </div>
+        <p class="feed-text">"Looking for a bright three-bedroom with a terrace or generous balcony. A quiet street and easy access to the sea matter most."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Budget: ₹4.5–5.5 Cr</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 3 BHK</span>
+          <span class="feed-chip">Purpose: Buy</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showBuy()">View Profile</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar seller">DA</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Dev Arora</span>
+                <span class="role-pill seller">Seller</span>
+              </div>
+              <div class="feed-location">New Delhi</div>
+            </div>
+          </div>
+          <div class="feed-thumb photo-courtyard"></div>
+        </div>
+        <p class="feed-text">"Preparing a family courtyard home for its next chapter. Gathering the right photographs and would value buyer perspectives on outdoor living."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Price: ₹8.40 Cr</span>
+          <span class="feed-chip">Area: 3800 sq.ft</span>
+          <span class="feed-chip">Property Type: Independent House</span>
+          <span class="feed-chip">Bedrooms: 3 BHK</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showSell()">View Property</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar buyer">SK</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Sneha Kulkarni</span>
+                <span class="role-pill buyer">Buyer</span>
+              </div>
+              <div class="feed-location">Pune</div>
+            </div>
+          </div>
+        </div>
+        <p class="feed-text">"Searching for a 1BHK clo7se to Hinjewadi IT park, ready to move in."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Budget: ₹35–45 Lakhs</span>
+          <span class="feed-chip">Property Type: Apartment</span>
+          <span class="feed-chip">Bedrooms: 1 BHK</span>
+          <span class="feed-chip">Purpose: Rent</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showBuy()">View Profile</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+      <div class="feed-post">
+        <div class="feed-post-head">
+          <div class="feed-post-who">
+            <div class="feed-avatar seller">KE</div>
+            <div>
+              <div class="feed-name-row">
+                <span class="feed-name">Kochi Estates</span>
+                <span class="role-pill seller">Seller</span>
+              </div>
+              <div class="feed-location">Kochi</div>
+            </div>
+          </div>
+          <div class="feed-thumb photo-garden"></div>
+        </div>
+        <p class="feed-text">"Contemporary garden residence with private courtyard, ready for viewing."</p>
+        <div class="feed-chips">
+          <span class="feed-chip">Price: ₹4.95 Cr</span>
+          <span class="feed-chip">Area: 2900 sq.ft</span>
+          <span class="feed-chip">Property Type: Independent House</span>
+          <span class="feed-chip">Bedrooms: 3 BHK</span>
+        </div>
+        <div class="feed-actions">
+          <button class="feed-btn" onclick="showSell()">View Property</button>
+          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
+          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <span class="brand">SmartProperty</span>
+    <span class="divider">·</span>
+    <span class="tagline">Private property advisory</span>
+  </div>
+  <div class="footer-year">© 2026</div>
+</footer>
+
+<button class="ask-aster" type="button" onclick="handleDeepAction('Ask Aster')">✦ Ask Aster</button>
+
+<div class="modal-overlay" id="signInModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeSignIn()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">Welcome back</div>
+    <div class="modal-subtitle">Sign in to continue your property journey.</div>
+
+    <form id="signInForm" onsubmit="handleSignIn(event)">
+      <div class="modal-field">
+        <label for="modal-email">Email</label>
+        <input type="email" id="modal-email" placeholder="you@example.com" required>
+      </div>
+      <div class="modal-field">
+        <label for="modal-password">Password</label>
+        <input type="password" id="modal-password" placeholder="Enter your password" required>
+      </div>
+      <div id="signInError" style="color:#B3453B; font-size:13px; margin-bottom:14px; display:none;"></div>
+      <button type="submit" class="modal-login-btn" id="signInSubmitBtn">Login</button>
+    </form>
+
+    <a class="modal-create" onclick="openCreateAccount()">Create account</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="createAccountModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeCreateAccount()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">Create account</div>
+    <div class="modal-subtitle">Start your property journey with us.</div>
+
+    <form id="createAccountForm" onsubmit="handleCreateAccount(event)">
+      <div class="modal-field">
+        <label for="create-name">Full name</label>
+        <input type="text" id="create-name" placeholder="Your name">
+      </div>
+      <div class="modal-field">
+        <label for="create-email">Email</label>
+        <input type="email" id="create-email" placeholder="you@example.com" required>
+      </div>
+      <div class="modal-field">
+        <label for="create-password">Password</label>
+        <input type="password" id="create-password" placeholder="Create a password" required minlength="6">
+      </div>
+      <div id="createAccountError" style="color:#B3453B; font-size:13px; margin-bottom:14px; display:none;"></div>
+      <button type="submit" class="modal-login-btn" id="createAccountSubmitBtn">Create Account</button>
+    </form>
+
+    <a class="modal-signin-link" onclick="switchToSignIn()">Already have an account? Sign in</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="roleModal">
+  <div class="modal-card">
+    <button class="modal-close" type="button" onclick="closeRoleModal()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">How will you use SmartProperty?</div>
+    <div class="modal-subtitle">Choose a profile to unlock the full property experience.</div>
+    <div class="role-options">
+      <button class="role-option" type="button" onclick="chooseRole('buyer')">I am a Buyer</button>
+      <button class="role-option" type="button" onclick="chooseRole('seller')">I am a Seller</button>
+    </div>
+    <div id="roleSelectionError" style="color:#B3453B; font-size:13px; margin-top:14px; display:none;"></div>
+  </div>
+</div>
+
+<script>
+  // Point this at your running backend (see /server folder).
+  const API_BASE_URL = '/api';
+  const editingPost = { role: null, id: null };
+
+  function getToken(){
+    return localStorage.getItem('sp_token');
+  }
+
+  // --- Sell form: file preview + save ---
+  document.addEventListener('DOMContentLoaded', function(){
+    const sellMediaInput = document.getElementById('sell-media');
+    if(sellMediaInput){
+      sellMediaInput.addEventListener('change', function(){
+        const list = document.getElementById('sellFileList');
+        const preview = document.getElementById('sellMediaPreview');
+        const files = Array.from(sellMediaInput.files).slice(0, 10);
+        list.textContent = files.length ? files.length + ' file(s) selected' : '';
+        preview.innerHTML = '';
+        files.forEach(function(file){
+          const media = document.createElement(file.type.startsWith('video/') ? 'video' : 'img');
+          media.src = URL.createObjectURL(file);
+          if(media.tagName === 'VIDEO'){
+            media.controls = true;
+            media.muted = true;
+          }
+          preview.appendChild(media);
+        });
+      });
+    }
+    const buyMediaInput = document.getElementById('buy-media');
+    if(buyMediaInput){
+      buyMediaInput.addEventListener('change', function(){
+        const list = document.getElementById('buyFileList');
+        const names = Array.from(buyMediaInput.files).map(f => f.name);
+        list.textContent = names.length ? names.join(', ') : '';
+      });
+    }
+  });
+
+  async function handleSaveSeller(){
+    const errorEl = document.getElementById('sellFormError');
+    const btn = document.getElementById('sellSaveBtn');
+    errorEl.style.display = 'none';
+
+    const token = getToken();
+    if(!token){
+      errorEl.textContent = 'Please sign in before saving your listing.';
+      errorEl.style.display = 'block';
+      openSignIn();
+      return;
+    }
+
+    if(!isProfileComplete('seller')){
+      errorEl.textContent = 'Save your seller profile before adding your first community post.';
+      errorEl.style.display = 'block';
+      document.getElementById('sellerProfileEditor').classList.add('active');
+      return;
+    }
+
+    const address = document.getElementById('sell-address').value.trim();
+    const price = document.getElementById('sell-price').value;
+    if(!address || !price){
+      errorEl.textContent = 'Property address and price are required.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('propertyAddress', address);
+    formData.append('price', price);
+    formData.append('area', document.getElementById('sell-area').value);
+    formData.append('propertyType', document.getElementById('sell-type').value || 'Apartment');
+    formData.append('bedrooms', document.getElementById('sell-bedrooms').value);
+    formData.append('description', document.getElementById('sell-description').value);
+
+    const files = document.getElementById('sell-media').files;
+    for(let i = 0; i < files.length; i++){
+      formData.append('media', files[i]);
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try{
+      const sellerUrl = editingPost.role === 'seller' && editingPost.id
+        ? API_BASE_URL + '/seller/' + editingPost.id
+        : API_BASE_URL + '/seller';
+      const res = await fetch(sellerUrl, {
+        method: editingPost.role === 'seller' && editingPost.id ? 'PUT' : 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      const responseText = await res.text();
+      let data;
+      try{
+        data = JSON.parse(responseText);
+      }catch(parseError){
+        throw new Error('Server error (' + res.status + '): ' + responseText.slice(0, 180));
+      }
+      if(!res.ok){
+        throw new Error(data.error || 'Could not save your listing.');
+      }
+      localStorage.setItem('sp_seller_first_post', 'true');
+      editingPost.role = null;
+      editingPost.id = null;
+      await renderCommunityPosts();
+      await loadAccountPosts();
+      showToast('First listing added to the community');
+      document.getElementById('sellFileList').textContent = '';
+      document.getElementById('sellMediaPreview').innerHTML = '';
+    }catch(err){
+      errorEl.textContent = err.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : err.message;
+      errorEl.style.display = 'block';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Save essentials';
+    }
+  }
+
+  async function handleSaveBuyer(){
+    const errorEl = document.getElementById('buyFormError');
+    const btn = document.getElementById('buySaveBtn');
+    errorEl.style.display = 'none';
+
+    const token = getToken();
+    if(!token){
+      errorEl.textContent = 'Please sign in before saving your preferences.';
+      errorEl.style.display = 'block';
+      openSignIn();
+      return;
+    }
+
+    if(!isProfileComplete('buyer')){
+      errorEl.textContent = 'Save your buyer profile before adding your first community post.';
+      errorEl.style.display = 'block';
+      document.getElementById('buyerProfileEditor').classList.add('active');
+      return;
+    }
+
+    const location = document.getElementById('buy-location').value.trim();
+    if(!location){
+      errorEl.textContent = 'Preferred location is required.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append('location', location);
+    payload.append('budgetMin', document.getElementById('buy-budget-min').value);
+    payload.append('budgetMax', document.getElementById('buy-budget-max').value);
+    payload.append('propertyType', document.getElementById('buy-type').value || 'Apartment');
+    payload.append('bedrooms', document.getElementById('buy-bedrooms').value);
+    payload.append('purpose', document.getElementById('buy-purpose').value);
+    payload.append('description', document.getElementById('buy-description').value);
+    const buyerFiles = document.getElementById('buy-media').files;
+    for(let i = 0; i < buyerFiles.length; i++){
+      payload.append('media', buyerFiles[i]);
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try{
+      const buyerUrl = editingPost.role === 'buyer' && editingPost.id
+        ? API_BASE_URL + '/buyer/' + editingPost.id
+        : API_BASE_URL + '/buyer';
+      const res = await fetch(buyerUrl, {
+        method: editingPost.role === 'buyer' && editingPost.id ? 'PUT' : 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: payload
+      });
+      const responseText = await res.text();
+      let data;
+      try{
+        data = JSON.parse(responseText);
+      }catch(parseError){
+        throw new Error('Server error (' + res.status + '): ' + responseText.slice(0, 180));
+      }
+      if(!res.ok){
+        throw new Error(data.error || 'Could not save your preferences.');
+      }
+      localStorage.setItem('sp_buyer_first_post', 'true');
+      editingPost.role = null;
+      editingPost.id = null;
+      await renderCommunityPosts();
+      await loadAccountPosts();
+      showToast('First preference post added to the community');
+      document.getElementById('buyFileList').textContent = '';
+      document.getElementById('buy-media').value = '';
+    }catch(err){
+      errorEl.textContent = err.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : err.message;
+      errorEl.style.display = 'block';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Save preferences';
+    }
+  }
+
+  function setAuthSession(token, user){
+    localStorage.setItem('sp_token', token);
+    localStorage.setItem('sp_user', JSON.stringify(user));
+    updateAuthUI();
+  }
+
+  function getUserRole(){
+    return localStorage.getItem('sp_role');
+  }
+
+  function hasSavedProfile(role){
+    try{
+      const profile = JSON.parse(localStorage.getItem('sp_' + role + '_profile') || '{}');
+      return Boolean(profile.name || profile.intro || profile.photo);
+    }catch(error){
+      return false;
+    }
+  }
+
+  function getSavedProfileRole(){
+    if(hasSavedProfile('seller')) return 'seller';
+    if(hasSavedProfile('buyer')) return 'buyer';
+    return null;
+  }
+
+  function canExplore(requestedRole){
+    if(!getToken()){
+      openCreateAccount();
+      return false;
+    }
+    const role = getUserRole() || requestedRole;
+    if(!role) return true;
+    if(!getUserRole()) localStorage.setItem('sp_role', role);
+    if(!isProfileComplete(role) || !isFirstPostComplete(role)){
+      openRoleWorkspace(role);
+      showToast(!isProfileComplete(role)
+        ? 'Complete your profile first'
+        : 'Add your first post to explore the full website');
+      return false;
+    }
+    return true;
+  }
+
+  function isProfileComplete(role){
+    return localStorage.getItem('sp_' + role + '_profile_complete') === 'true' || hasSavedProfile(role);
+  }
+
+  function isFirstPostComplete(role){
+    return localStorage.getItem('sp_' + role + '_first_post') === 'true';
+  }
+
+  function openRoleWorkspace(role){
+    document.getElementById('homeView').style.display = 'none';
+    document.getElementById('sellView').style.display = role === 'seller' ? 'block' : 'none';
+    document.getElementById('buyView').style.display = role === 'buyer' ? 'block' : 'none';
+    document.getElementById('communityView').style.display = 'none';
+    window.scrollTo(0,0);
+  }
+
+  function clearAuthSession(){
+    localStorage.removeItem('sp_token');
+    localStorage.removeItem('sp_user');
+    localStorage.removeItem('sp_role');
+    localStorage.removeItem('sp_buyer_profile_complete');
+    localStorage.removeItem('sp_buyer_first_post');
+    localStorage.removeItem('sp_seller_profile_complete');
+    localStorage.removeItem('sp_seller_first_post');
+    updateAuthUI();
+  }
+
+  function getAuthUser(){
+    try{
+      const raw = localStorage.getItem('sp_user');
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){
+      return null;
+    }
+  }
+
+  function loadSellerProfile(){
+    try{
+      const profile = JSON.parse(localStorage.getItem('sp_seller_profile') || '{}');
+      if(profile.name) document.getElementById('seller-profile-name').value = profile.name;
+      if(profile.intro) document.getElementById('seller-profile-intro').value = profile.intro;
+      applyProfilePhoto('seller', profile.photo);
+      updateAccountProfileUI();
+    }catch(error){
+      localStorage.removeItem('sp_seller_profile');
+    }
+  }
+
+  function toggleSellerProfileEditor(){
+    const editor = document.getElementById('sellerProfileEditor');
+    const isActive = editor.classList.toggle('active');
+    setProfileEditingView('seller', isActive);
+  }
+
+  function setProfileEditingView(role, isEditing){
+    const postSection = document.getElementById(role === 'seller' ? 'sellerPostSection' : 'buyerPostSection');
+    const bottomBar = document.getElementById(role === 'seller' ? 'sellView' : 'buyView').querySelector('.sell-bottom-bar');
+    if(postSection) postSection.style.display = isEditing ? 'none' : '';
+    if(bottomBar) bottomBar.style.display = isEditing ? 'none' : '';
+  }
+
+  function saveSellerProfile(){
+    const name = document.getElementById('seller-profile-name').value.trim();
+    const intro = document.getElementById('seller-profile-intro').value.trim();
+    if(!name || !intro){
+      showToast('Add your name and introduction');
+      return;
+    }
+    const existing = JSON.parse(localStorage.getItem('sp_seller_profile') || '{}');
+    localStorage.setItem('sp_seller_profile', JSON.stringify({ name, intro, photo: existing.photo || '' }));
+    localStorage.setItem('sp_seller_profile_complete', 'true');
+    document.getElementById('sellerProfileEditor').classList.remove('active');
+    setProfileEditingView('seller', false);
+    updateAccountProfileUI();
+    showToast('Profile saved. Add your first listing next.');
+  }
+
+  function loadBuyerProfile(){
+    try{
+      const profile = JSON.parse(localStorage.getItem('sp_buyer_profile') || '{}');
+      if(profile.name) document.getElementById('buyer-profile-name').value = profile.name;
+      if(profile.intro) document.getElementById('buyer-profile-intro').value = profile.intro;
+      applyProfilePhoto('buyer', profile.photo);
+      updateAccountProfileUI();
+    }catch(error){
+      localStorage.removeItem('sp_buyer_profile');
+    }
+  }
+
+  function toggleBuyerProfileEditor(){
+    const editor = document.getElementById('buyerProfileEditor');
+    const isActive = editor.classList.toggle('active');
+    setProfileEditingView('buyer', isActive);
+  }
+
+  function saveBuyerProfile(){
+    const name = document.getElementById('buyer-profile-name').value.trim();
+    const intro = document.getElementById('buyer-profile-intro').value.trim();
+    if(!name || !intro){
+      showToast('Add your name and introduction');
+      return;
+    }
+    const existing = JSON.parse(localStorage.getItem('sp_buyer_profile') || '{}');
+    localStorage.setItem('sp_buyer_profile', JSON.stringify({ name, intro, photo: existing.photo || '' }));
+    localStorage.setItem('sp_buyer_profile_complete', 'true');
+    document.getElementById('buyerProfileEditor').classList.remove('active');
+    setProfileEditingView('buyer', false);
+    updateAccountProfileUI();
+    showToast('Profile saved. Add your first preference post next.');
+  }
+
+  function applyProfilePhoto(role, photo){
+    const avatar = document.getElementById(role + 'ProfileAvatar');
+    if(!avatar || !photo) return;
+    avatar.style.backgroundImage = 'url(' + photo + ')';
+    avatar.classList.add('has-photo');
+  }
+
+  function handleProfilePhotoChange(role, input){
+    const file = input.files && input.files[0];
+    if(!file) return;
+    if(!file.type.startsWith('image/')){
+      showToast('Please choose an image file');
+      input.value = '';
+      return;
+    }
+    if(file.size > 2 * 1024 * 1024){
+      showToast('Profile photos must be 2MB or smaller');
+      input.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(){
+      const key = role === 'seller' ? 'sp_seller_profile' : 'sp_buyer_profile';
+      const profile = JSON.parse(localStorage.getItem(key) || '{}');
+      profile.photo = reader.result;
+      localStorage.setItem(key, JSON.stringify(profile));
+      applyProfilePhoto(role, profile.photo);
+
+      const token = getToken();
+      if(token){
+        fetch(API_BASE_URL + '/auth/profile-photo', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ profilePhoto: reader.result })
+        }).then(async function(response){
+          const data = await response.json().catch(function(){ return {}; });
+          if(!response.ok) throw new Error(data.error || 'Unable to save profile photo.');
+          const currentUser = getAuthUser() || {};
+          const nextUser = Object.assign({}, currentUser, { profilePhoto: reader.result, photo: reader.result });
+          localStorage.setItem('sp_user', JSON.stringify(nextUser));
+          updateAccountProfileUI();
+          return renderCommunityPosts();
+        }).catch(function(err){
+          console.error('Profile photo sync failed:', err);
+        }).finally(function(){
+          showToast('Profile photo added');
+        });
+      } else {
+        updateAccountProfileUI();
+        showToast('Profile photo added');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function searchBuyerLocationOnGoogle(){
+    const location = document.getElementById('buy-location').value.trim();
+    if(!location){
+      document.getElementById('buyerLocationStatus').textContent = 'Enter a location first.';
+      return;
+    }
+    const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(location);
+    window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  function useBuyerLiveLocation(){
+    const status = document.getElementById('buyerLocationStatus');
+    if(!navigator.geolocation){
+      status.textContent = 'Live location is not supported by this browser.';
+      return;
+    }
+    status.textContent = 'Requesting your location...';
+    navigator.geolocation.getCurrentPosition(function(position){
+      const latitude = position.coords.latitude.toFixed(6);
+      const longitude = position.coords.longitude.toFixed(6);
+      document.getElementById('buy-location').value = 'Live location: ' + latitude + ', ' + longitude;
+      status.textContent = 'Live location added. You can search it on Google Maps.';
+    }, function(){
+      status.textContent = 'Location permission was denied or unavailable.';
+    }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+  }
+
+  function searchSellerLocationOnGoogle(){
+    const address = document.getElementById('sell-address').value.trim();
+    if(!address){
+      document.getElementById('sellerLocationStatus').textContent = 'Enter an address first.';
+      return;
+    }
+    const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
+    window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  function useSellerLiveLocation(){
+    const status = document.getElementById('sellerLocationStatus');
+    if(!navigator.geolocation){
+      status.textContent = 'Live location is not supported by this browser.';
+      return;
+    }
+    status.textContent = 'Requesting your location...';
+    navigator.geolocation.getCurrentPosition(function(position){
+      const latitude = position.coords.latitude.toFixed(6);
+      const longitude = position.coords.longitude.toFixed(6);
+      document.getElementById('sell-address').value = 'Live location: ' + latitude + ', ' + longitude;
+      status.textContent = 'Live location added. You can search it on Google Maps.';
+    }, function(){
+      status.textContent = 'Location permission was denied or unavailable.';
+    }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+  }
+
+  function updateAuthUI(){
+    const btn = document.getElementById('signInNavBtn');
+    if(!btn) return;
+    const user = getAuthUser();
+    if(user){
+      updateAccountProfileUI();
+      btn.onclick = function(){ openAccountSidebar(); };
+      document.getElementById('accountSidebarEmail').textContent = user.email || '';
+    } else {
+      btn.textContent = 'Sign In';
+      btn.onclick = function(){ openSignIn(); };
+      document.getElementById('accountSidebarName').textContent = 'Your account';
+      document.getElementById('accountSidebarEmail').textContent = '';
+      document.getElementById('accountSidebarRole').textContent = '';
+      document.getElementById('accountSidebarIntro').textContent = '';
+    }
+  }
+
+  function updateAccountProfileUI(){
+    const user = getAuthUser();
+    if(!user) return;
+
+    const role = getUserRole() || getSavedProfileRole();
+    let profile = {};
+    try{
+      profile = JSON.parse(localStorage.getItem('sp_' + role + '_profile') || '{}');
+    }catch(error){
+      profile = {};
+    }
+
+    const name = profile.name || user.name || 'Account';
+    const initials = name.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
+    const photo = profile.photo || '';
+    const navButton = document.getElementById('signInNavBtn');
+    const navAvatar = document.createElement('span');
+    navAvatar.className = 'account-avatar' + (photo ? ' has-photo' : '');
+    navAvatar.textContent = initials;
+    if(photo) navAvatar.style.backgroundImage = 'url(' + photo + ')';
+    navButton.textContent = '';
+    navButton.appendChild(navAvatar);
+    const navName = document.createElement('span');
+    navName.textContent = name.split(/\s+/)[0];
+    navButton.appendChild(navName);
+
+    const sidebarAvatar = document.getElementById('accountSidebarAvatar');
+    sidebarAvatar.textContent = initials;
+    sidebarAvatar.classList.toggle('has-photo', Boolean(photo));
+    sidebarAvatar.style.backgroundImage = photo ? 'url(' + photo + ')' : '';
+    document.getElementById('accountSidebarName').textContent = name;
+    document.getElementById('accountSidebarRole').textContent = role ? role + ' profile' : '';
+    document.getElementById('accountSidebarIntro').textContent = profile.intro || '';
+  }
+
+  function handleLogout(){
+    closeAccountSidebar();
+    clearAuthSession();
+    showToast('Signed out');
+  }
+
+  function openAccountSidebar(){
+    updateAuthUI();
+    document.getElementById('accountSidebar').classList.add('active');
+    loadAccountPosts();
+  }
+
+  async function loadAccountPosts(){
+    const container = document.getElementById('accountSidebarPosts');
+    if(!container || !getToken()) return;
+    container.innerHTML = '<div class="account-sidebar-posts-title">Your posts</div><div class="account-post-meta">Loading...</div>';
+    try{
+      const role = getUserRole() || getSavedProfileRole();
+      const roles = role ? [role] : ['buyer', 'seller'];
+      const results = await Promise.all(roles.map(function(currentRole){
+        return fetch(API_BASE_URL + '/' + currentRole + '/mine', {
+          headers:{ 'Authorization':'Bearer ' + getToken() }
+        }).then(function(response){ return response.ok ? response.json() : {}; });
+      }));
+      const posts = [];
+      results.forEach(function(result, index){
+        const currentRole = roles[index];
+        const records = result[currentRole === 'buyer' ? 'buyers' : 'sellers'] || [];
+        records.forEach(function(post){ posts.push({ role:currentRole, post }); });
+      });
+      container.innerHTML = '<div class="account-sidebar-posts-title">Your posts</div>' +
+        (posts.length ? posts.map(accountPostMarkup).join('') : '<div class="account-post-meta">You have not uploaded a post yet.</div>');
+    }catch(error){
+      container.innerHTML = '<div class="account-sidebar-posts-title">Your posts</div><div class="account-post-meta">Could not load your posts.</div>';
+    }
+  }
+
+  function accountPostMarkup(item){
+    const post = item.post;
+    const title = item.role === 'seller' ? post.propertyAddress : post.location;
+    const detail = item.role === 'seller'
+      ? 'Seller · ' + (post.price || 'Price not set')
+      : 'Buyer · ' + (post.budgetMin || 'Any') + ' - ' + (post.budgetMax || 'Any');
+    return '<div class="account-post-item"><div class="account-post-title">' + escapeHtml(title) + '</div>' +
+      '<div class="account-post-meta">' + escapeHtml(detail) + '</div><div class="account-post-actions">' +
+      '<button class="account-post-action" type="button" onclick="editAccountPost(\'' + item.role + '\',\'' + post._id + '\')">Edit</button>' +
+      '<button class="account-post-action delete" type="button" onclick="deleteAccountPost(\'' + item.role + '\',\'' + post._id + '\')">Delete</button></div></div>';
+  }
+
+  async function deleteAccountPost(role, id){
+    if(!window.confirm('Delete this post?')) return;
+    try{
+      const response = await fetch(API_BASE_URL + '/' + role + '/' + id, {
+        method:'DELETE',
+        headers:{ 'Authorization':'Bearer ' + getToken() }
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Could not delete this post.');
+      await loadAccountPosts();
+      await renderCommunityPosts();
+      showToast('Post deleted');
+    }catch(error){
+      showToast(error.message);
+    }
+  }
+
+  async function editAccountPost(role, id){
+    try{
+      const response = await fetch(API_BASE_URL + '/' + role + '/mine', {
+        headers:{ 'Authorization':'Bearer ' + getToken() }
+      });
+      const data = await response.json();
+      const records = data[role === 'buyer' ? 'buyers' : 'sellers'] || [];
+      const post = records.find(function(item){ return item._id === id; });
+      if(!post) throw new Error('Post not found.');
+      editingPost.role = role;
+      editingPost.id = id;
+      closeAccountSidebar();
+      openRoleWorkspace(role);
+      setProfileEditingView(role, false);
+      if(role === 'seller'){
+        document.getElementById('sell-address').value = post.propertyAddress || '';
+        document.getElementById('sell-price').value = post.price || '';
+        document.getElementById('sell-area').value = post.area || '';
+        document.getElementById('sell-type').value = post.propertyType || '';
+        document.getElementById('sell-bedrooms').value = post.bedrooms || '';
+        document.getElementById('sell-description').value = post.description || '';
+        document.getElementById('sellSaveBtn').textContent = 'Update listing';
+        document.getElementById('sellerPostSection').scrollIntoView({ behavior:'smooth', block:'start' });
+      }else{
+        document.getElementById('buy-location').value = post.location || '';
+        document.getElementById('buy-budget-min').value = post.budgetMin || '';
+        document.getElementById('buy-budget-max').value = post.budgetMax || '';
+        document.getElementById('buy-type').value = post.propertyType || '';
+        document.getElementById('buy-bedrooms').value = post.bedrooms || '';
+        document.getElementById('buy-purpose').value = post.purpose || 'Buy';
+        document.getElementById('buy-description').value = post.description || '';
+        document.getElementById('buySaveBtn').textContent = 'Update preferences';
+        document.getElementById('buyerPostSection').scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    }catch(error){
+      showToast(error.message);
+    }
+  }
+
+  function closeAccountSidebar(event){
+    if(event && event.target !== event.currentTarget) return;
+    document.getElementById('accountSidebar').classList.remove('active');
+  }
+
+  function editAccountProfile(){
+    closeAccountSidebar();
+    const role = getUserRole() || getSavedProfileRole();
+    if(role === 'seller'){
+      localStorage.setItem('sp_role', role);
+      openRoleWorkspace('seller');
+      document.getElementById('sellerProfileEditor').classList.add('active');
+      setProfileEditingView('seller', true);
+      return;
+    }
+    if(role === 'buyer'){
+      localStorage.setItem('sp_role', role);
+      openRoleWorkspace('buyer');
+      document.getElementById('buyerProfileEditor').classList.add('active');
+      setProfileEditingView('buyer', true);
+      return;
+    }
+    openRoleModal();
+  }
+
+  function createAccountPost(){
+    closeAccountSidebar();
+    const role = getUserRole() || getSavedProfileRole();
+    if(!role){
+      openRoleModal();
+      return;
+    }
+
+    localStorage.setItem('sp_role', role);
+    editingPost.role = null;
+    editingPost.id = null;
+    openRoleWorkspace(role);
+    if(!isProfileComplete(role)){
+      document.getElementById(role + 'ProfileEditor').classList.add('active');
+      setProfileEditingView(role, true);
+      showToast('Complete your profile before creating a post');
+      return;
+    }
+
+    const postSection = document.getElementById(role === 'seller' ? 'sellerPostSection' : 'buyerPostSection');
+    if(postSection) postSection.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  async function handleSignIn(event){
+    event.preventDefault();
+    const email = document.getElementById('modal-email').value.trim();
+    const password = document.getElementById('modal-password').value;
+    const errorEl = document.getElementById('signInError');
+    const btn = document.getElementById('signInSubmitBtn');
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if(!res.ok){
+        throw new Error(data.error || 'Unable to sign in.');
+      }
+      setAuthSession(data.token, data.user);
+      closeSignIn();
+      showToast('Welcome back, ' + (data.user.name || data.user.email));
+    }catch(err){
+      errorEl.textContent = err.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : err.message;
+      errorEl.style.display = 'block';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Login';
+    }
+  }
+
+  async function handleCreateAccount(event){
+    event.preventDefault();
+    const name = document.getElementById('create-name').value.trim();
+    const email = document.getElementById('create-email').value.trim();
+    const password = document.getElementById('create-password').value;
+    const errorEl = document.getElementById('createAccountError');
+    const btn = document.getElementById('createAccountSubmitBtn');
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+
+    try{
+      const res = await fetch(API_BASE_URL + '/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      if(!res.ok){
+        throw new Error(data.error || 'Unable to create account.');
+      }
+      setAuthSession(data.token, data.user);
+      closeCreateAccount();
+      openRoleModal();
+    }catch(err){
+      errorEl.textContent = err.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : err.message;
+      errorEl.style.display = 'block';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  }
+
+  function showSell(){
+    if(!canExplore('seller')) return;
+    document.getElementById('homeView').style.display = 'none';
+    document.getElementById('buyView').style.display = 'none';
+    document.getElementById('communityView').style.display = 'none';
+    document.getElementById('sellView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+  function handleConnect(btn){
+    if(!canExplore()) return;
+    btn.textContent = 'Request Sent';
+    btn.disabled = true;
+    btn.classList.remove('primary');
+    btn.classList.add('sent');
+    showToast('Connection request sent');
+  }
+
+  function handleMessage(btn){
+    if(!canExplore()) return;
+    showToast('Messaging coming soon');
+  }
+
+  function handleDeepAction(actionName){
+    if(!canExplore()) return;
+    showToast(actionName + ' is ready for your profile');
+  }
+
+  function showToast(text){
+    let toast = document.getElementById('community-toast');
+    if(!toast){
+      toast = document.createElement('div');
+      toast.id = 'community-toast';
+      toast.style.position = 'fixed';
+      toast.style.bottom = '32px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.background = '#1E2B1F';
+      toast.style.color = '#fff';
+      toast.style.padding = '14px 26px';
+      toast.style.borderRadius = '999px';
+      toast.style.fontSize = '14px';
+      toast.style.fontFamily = "'Inter', sans-serif";
+      toast.style.zIndex = '2000';
+      toast.style.transition = 'opacity 0.3s ease';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = text;
+    toast.style.opacity = '1';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function(){
+      toast.style.opacity = '0';
+    }, 2200);
+  }
+
+  function showBuy(){
+    if(!canExplore('buyer')) return;
+    document.getElementById('homeView').style.display = 'none';
+    document.getElementById('sellView').style.display = 'none';
+    document.getElementById('communityView').style.display = 'none';
+    document.getElementById('buyView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+  function showCommunity(){
+    if(!canExplore()) return;
+    document.getElementById('homeView').style.display = 'none';
+    document.getElementById('sellView').style.display = 'none';
+    document.getElementById('buyView').style.display = 'none';
+    document.getElementById('communityView').style.display = 'block';
+    renderCommunityPosts();
+    window.scrollTo(0,0);
+  }
+
+  function escapeHtml(value){
+    return String(value || '').replace(/[&<>"']/g, function(character){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[character];
+    });
+  }
+
+  function escapeAttribute(value){
+    return String(value || '').replace(/['"&<>]/g, function(character){
+      return {'"':'&quot;','\'':'&#39;','&':'&amp;','<':'&lt;','>':'&gt;'}[character];
+    });
+  }
+
+  function getAvatarMarkup(user, role, fallbackName){
+    const photo = user && (user.profilePhoto || user.photo || user.profile_photo || '');
+    const name = user && user.name ? user.name : fallbackName;
+    const initials = escapeHtml((name || 'U').split(' ').map(function(part){ return part[0]; }).join('').slice(0,2).toUpperCase());
+    const style = photo ? 'background-image:url(\'' + escapeAttribute(photo) + '\'); background-size:cover; background-position:center;' : '';
+    return '<div class="feed-avatar ' + role + (photo ? ' has-photo' : '') + '" style="' + style + '">' + (photo ? '' : initials) + '</div>';
+  }
+
+  function getMediaMarkup(mediaItems){
+    const items = Array.isArray(mediaItems) ? mediaItems.filter(Boolean) : [];
+    if (!items.length) return '';
+    const slides = items.map(function(item, index){
+      const url = item && item.url ? item.url : '';
+      const type = (item && item.type ? item.type : 'image').toLowerCase();
+      const isVideo = type === 'video';
+      const safeUrl = escapeAttribute(url);
+      const mediaMarkup = isVideo
+        ? '<video src="' + safeUrl + '" muted playsinline preload="metadata" data-video="true"></video>' +
+          '<div class="community-media-overlay"><div class="community-media-controls"><button class="community-media-btn" type="button" data-video-action="toggle-play">Play</button><button class="community-media-btn" type="button" data-video-action="toggle-mute">Mute</button></div></div>'
+        : '<img src="' + safeUrl + '" alt="Post media" />';
+      return '<div class="community-media-slide ' + (index === 0 ? 'active' : '') + '" data-index="' + index + '">' + mediaMarkup + '</div>';
+    }).join('');
+    const nav = items.length > 1 ? '<div class="community-media-nav"><button type="button" data-media-nav="prev">Prev</button><button type="button" data-media-nav="next">Next</button></div>' : '';
+    return '<div class="community-media-shell" data-media-shell="true"><div class="community-media-viewport">' + slides + '</div><div class="community-media-overlay"><div class="community-media-index">1/' + items.length + '</div>' + nav + '</div></div>';
+  }
+
+  function bindCommunityMedia(){
+    document.querySelectorAll('[data-media-shell="true"]').forEach(function(shell){
+      const slides = Array.from(shell.querySelectorAll('.community-media-slide'));
+      if (!slides.length) return;
+      const indexLabel = shell.querySelector('.community-media-index');
+      const navButtons = shell.querySelectorAll('[data-media-nav]');
+      const setSlide = function(nextIndex){
+        const target = (nextIndex + slides.length) % slides.length;
+        slides.forEach(function(slide, index){
+          slide.classList.toggle('active', index === target);
+        });
+        if (indexLabel) indexLabel.textContent = (target + 1) + '/' + slides.length;
+      };
+      navButtons.forEach(function(button){
+        button.addEventListener('click', function(){
+          const currentActive = slides.findIndex(function(slide){ return slide.classList.contains('active'); });
+          const delta = button.getAttribute('data-media-nav') === 'next' ? 1 : -1;
+          setSlide(currentActive + delta);
+        });
+      });
+      shell.querySelectorAll('[data-video-action]').forEach(function(button){
+        const slide = button.closest('.community-media-slide');
+        const video = slide && slide.querySelector('video');
+        if (!video) return;
+        video.muted = true;
+        video.playsInline = true;
+        video.controls = false;
+        button.addEventListener('click', function(){
+          const action = button.getAttribute('data-video-action');
+          if (action === 'toggle-play') {
+            if (video.paused) {
+              video.play();
+              button.textContent = 'Pause';
+            } else {
+              video.pause();
+              button.textContent = 'Play';
+            }
+          }
+          if (action === 'toggle-mute') {
+            video.muted = !video.muted;
+            button.textContent = video.muted ? 'Unmute' : 'Mute';
+          }
+        });
+      });
+      shell.querySelectorAll('img, video').forEach(function(media){
+        media.style.cursor = 'zoom-in';
+        media.addEventListener('click', function(){
+          openMediaViewer(media.currentSrc || media.src, media.tagName.toLowerCase());
+        });
+      });
+    });
+  }
+
+  function openMediaViewer(url, type){
+    const viewer = document.createElement('div');
+    viewer.className = 'media-viewer';
+    viewer.setAttribute('role', 'dialog');
+    viewer.setAttribute('aria-label', 'Media preview');
+    const content = document.createElement('div');
+    content.className = 'media-viewer-content';
+    const closeButton = document.createElement('button');
+    closeButton.className = 'media-viewer-close';
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label', 'Close media preview');
+    closeButton.textContent = 'x';
+    const media = document.createElement(type === 'video' ? 'video' : 'img');
+    media.src = url;
+    if(type === 'video'){
+      media.controls = true;
+      media.autoplay = true;
+      media.playsInline = true;
+    }
+    content.appendChild(closeButton);
+    content.appendChild(media);
+    viewer.appendChild(content);
+    document.body.appendChild(viewer);
+
+    const closeViewer = function(){
+      if(media.pause) media.pause();
+      viewer.remove();
+    };
+    closeButton.addEventListener('click', closeViewer);
+    viewer.addEventListener('click', function(event){
+      if(event.target === viewer) closeViewer();
+    });
+    document.addEventListener('keydown', function handleEscape(event){
+      if(event.key === 'Escape'){
+        closeViewer();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    });
+  }
+
+  function formatCommunityValue(value, fallback){
+    return value === undefined || value === null || value === '' ? fallback : escapeHtml(value);
+  }
+
+  function formatCommunityTime(value){
+    if(!value) return 'Posted recently';
+    const date = new Date(value);
+    if(Number.isNaN(date.getTime())) return 'Posted recently';
+    const minutes = Math.max(0, Math.floor((Date.now() - date.getTime()) / 60000));
+    if(minutes < 1) return 'Just now';
+    if(minutes < 60) return minutes + ' min ago';
+    const hours = Math.floor(minutes / 60);
+    if(hours < 24) return hours + ' hr ago';
+    const days = Math.floor(hours / 24);
+    return days + ' day' + (days === 1 ? '' : 's') + ' ago';
+  }
+
+  function filterCommunityPosts(role, button){
+    document.querySelectorAll('[data-community-filter]').forEach(function(filterButton){
+      filterButton.classList.toggle('active', filterButton === button);
+    });
+    document.querySelectorAll('.community-feed-full .dynamic-community-post').forEach(function(post){
+      post.style.display = role === 'all' || post.getAttribute('data-community-role') === role ? '' : 'none';
+    });
+  }
+
+  function communityPostMarkup(post, role){
+    const user = post.user || {};
+    const name = formatCommunityValue(user.name, role === 'buyer' ? 'Buyer' : 'Seller');
+    const location = formatCommunityValue(role === 'buyer' ? post.location : post.propertyAddress, 'Location not provided');
+    const type = formatCommunityValue(post.propertyType, 'Property');
+    const bedrooms = formatCommunityValue(post.bedrooms, 'Not specified');
+    const description = formatCommunityValue(post.description, role === 'buyer' ? 'Looking for a suitable home.' : 'Property available for viewing.');
+    const price = role === 'buyer'
+      ? 'Budget: ' + formatCommunityValue(post.budgetMin, 'Any') + ' - ' + formatCommunityValue(post.budgetMax, 'Any')
+      : 'Price: ' + formatCommunityValue(post.price, 'Contact seller');
+    const mediaMarkup = getMediaMarkup(post.media || []);
+    const detailValue = role === 'buyer'
+      ? formatCommunityValue(post.budgetMin, 'Any') + ' - ' + formatCommunityValue(post.budgetMax, 'Any')
+      : formatCommunityValue(post.price, 'Contact seller');
+    const detailLabel = role === 'buyer' ? 'Budget' : 'Price';
+    const actionLabel = role === 'buyer' ? 'View profile' : 'View property';
+    const postedTime = formatCommunityTime(post.createdAt || post.updatedAt);
+    return '<div class="feed-post dynamic-community-post" data-community-role="' + role + '">' +
+      '<div class="feed-post-head"><div class="feed-post-who">' +
+      getAvatarMarkup(user, role, role === 'buyer' ? 'Buyer' : 'Seller') +
+      '<div><div class="feed-name-row"><span class="feed-name">' + name + '</span></div><div class="feed-location">&#9906; ' + location + '</div></div></div><span class="community-intent-pill">&#8981; ' + (role === 'buyer' ? 'Looking for' : 'For sale') + '</span></div>' +
+      '<p class="feed-text">&quot;' + description + '&quot;</p>' +
+      mediaMarkup +
+      '<div class="community-detail-grid">' +
+      '<div class="community-detail-tile budget"><span class="community-detail-label">' + detailLabel + '</span><span class="community-detail-value">' + detailValue + '</span></div>' +
+      '<div class="community-detail-tile type"><span class="community-detail-label">Property type</span><span class="community-detail-value">' + type + '</span></div>' +
+      '<div class="community-detail-tile bedrooms"><span class="community-detail-label">Bedrooms</span><span class="community-detail-value">' + bedrooms + '</span></div>' +
+      '</div>' +
+      '<div class="community-post-meta"><span class="community-post-time">&#9711; ' + postedTime + '</span><button class="feed-btn" type="button" onclick="' + (role === 'buyer' ? 'showBuy()' : 'showSell()') + '">' + actionLabel + ' &#8599;</button></div></div>';
+  }
+
+  async function renderCommunityPosts(){
+    const feeds = document.querySelectorAll('.community-feed, .community-feed-full');
+    if(!feeds.length) return;
+    feeds.forEach(function(feed){
+      feed.innerHTML = '';
+    });
+    try{
+      const responses = await Promise.all([
+        fetch(API_BASE_URL + '/buyer'),
+        fetch(API_BASE_URL + '/seller')
+      ]);
+      if(!responses[0].ok || !responses[1].ok) return;
+      const buyers = (await responses[0].json()).buyers || [];
+      const sellers = (await responses[1].json()).sellers || [];
+      const posts = buyers.map(function(post){ return communityPostMarkup(post, 'buyer'); })
+        .concat(sellers.map(function(post){ return communityPostMarkup(post, 'seller'); }));
+      feeds.forEach(function(feed){
+        feed.innerHTML = posts.length
+          ? posts.join('')
+          : '<div class="community-empty">No community posts yet. Complete your first Buyer or Seller post to begin.</div>';
+      });
+      bindCommunityMedia();
+      const activeFilter = document.querySelector('.community-filter-btn.active');
+      filterCommunityPosts(activeFilter ? activeFilter.getAttribute('data-community-filter') : 'all', activeFilter);
+    }catch(error){
+      console.error('Community load error:', error);
+    }
+  }
+  function showHome(){
+    document.getElementById('sellView').style.display = 'none';
+    document.getElementById('buyView').style.display = 'none';
+    document.getElementById('communityView').style.display = 'none';
+    document.getElementById('homeView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+  function openSignIn(){
+    document.getElementById('signInModal').classList.add('active');
+  }
+  function closeSignIn(){
+    document.getElementById('signInModal').classList.remove('active');
+  }
+  function openCreateAccount(){
+    closeSignIn();
+    document.getElementById('createAccountModal').classList.add('active');
+  }
+  function closeCreateAccount(){
+    document.getElementById('createAccountModal').classList.remove('active');
+  }
+
+  function openRoleModal(){
+    if(getUserRole() || getSavedProfileRole()) return;
+    document.getElementById('roleModal').classList.add('active');
+  }
+
+  function closeRoleModal(){
+    document.getElementById('roleModal').classList.remove('active');
+  }
+
+  function chooseRole(role){
+    localStorage.setItem('sp_role', role);
+    closeRoleModal();
+    openRoleWorkspace(role);
+    showToast('Create your ' + (role === 'buyer' ? 'buyer' : 'seller') + ' profile first');
+  }
+  function switchToSignIn(){
+    closeCreateAccount();
+    openSignIn();
+  }
+  document.getElementById('signInModal').addEventListener('click', function(e){
+    if(e.target === this){ closeSignIn(); }
+  });
+  document.getElementById('createAccountModal').addEventListener('click', function(e){
+    if(e.target === this){ closeCreateAccount(); }
+  });
+  document.getElementById('roleModal').addEventListener('click', function(e){
+    if(e.target === this){ closeRoleModal(); }
+  });
+  updateAuthUI();
+  loadSellerProfile();
+  loadBuyerProfile();
+  renderCommunityPosts();
+</script>
+
+</body>
+</html>

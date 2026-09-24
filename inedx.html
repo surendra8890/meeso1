@@ -171,8 +171,8 @@
   }
 
   .feed-name{
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--text-dark);
   }
 
@@ -189,9 +189,42 @@
   .role-pill.seller{ background: #F2E2D3; color: #8A5A3B; }
 
   .feed-location{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    margin-top: 5px;
+    padding: 4px 9px 4px 7px;
+    border: 1px solid #000000;
+    border-radius: 999px;
+    background: #f4f0f2;
+    color: #000000;
     font-size: 12px;
-    color: #69739a;
-    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  .feed-location::before{
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #16834c;
+    border-radius: 50% 50% 50% 0;
+    background: radial-gradient(circle, #16834c 0 2px, transparent 2.5px);
+    transform: rotate(-45deg);
+    flex-shrink: 0;
+  }
+
+  .community-intent-pill{
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f2eee6;
+    color: #6d6557;
+    font-size: 11px;
+    font-weight: 600;
   }
 
   .feed-thumb{
@@ -370,9 +403,9 @@
     border-radius: 10px;
   }
 
-  .community-detail-tile.budget{ background: #d8f6e8; color: #087858; }
-  .community-detail-tile.type{ background: #dce8ff; color: #315bb5; }
-  .community-detail-tile.bedrooms{ background: #f7e1f2; color: #bd367d; }
+  .community-detail-tile.budget{ background: #e6ca9a; color: #000000; }
+  .community-detail-tile.type{ background: #e6ca9a; color: #000000; }
+  .community-detail-tile.bedrooms{ background: #e6ca9a; color: #000000; }
 
   .community-detail-label{
     display: block;
@@ -393,7 +426,7 @@
   .community-post-meta{
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 12px;
     padding-top: 14px;
     border-top: 1px solid #e3dcf6;
@@ -402,7 +435,7 @@
   }
 
   .community-post-meta .feed-btn{
-    background: #1598b8;
+    background: #111111;
     color: var(--white);
     border: none;
     padding: 9px 16px;
@@ -412,6 +445,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    margin-left: auto;
   }
 
   .media-viewer{
@@ -463,29 +497,43 @@
 
   .feed-actions{
     display:flex;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
   .feed-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     font-size: 13px;
     font-weight: 500;
     padding: 7px 14px;
     border-radius: 999px;
     cursor: pointer;
     border: 1px solid rgba(43,42,37,0.18);
-    background: var(--white);
-    color: var(--text-dark);
+    background: #111111;
+    color: var(--white);
   }
 
-  .feed-btn:hover{ background: var(--bg-cream); }
+  .feed-btn:hover{ background: #2d2d2d; }
+
+  .feed-btn-icon{
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .feed-btn.active{
+    background: #3b3b3b;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+  }
 
   .feed-btn.primary{
-    background: #1E2B1F;
+    background: #111111;
     color: var(--white);
     border: none;
   }
-  .feed-btn.primary:hover{ background: #14201A; }
+  .feed-btn.primary:hover{ background: #2d2d2d; }
 
   .feed-btn.sent{
     background: var(--bg-cream);
@@ -1861,9 +1909,11 @@
           <span class="feed-chip">Purpose: Buy</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showBuy()">View Profile</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn" title="View profile" onclick="showBuy()"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">View Profile</span></button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -1890,9 +1940,10 @@
           <span class="feed-chip">Bedrooms: 2 BHK</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showSell()">View Property</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -1918,9 +1969,11 @@
           <span class="feed-chip">Purpose: Buy</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showBuy()">View Profile</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn" title="View profile" onclick="showBuy()"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">View Profile</span></button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -1947,9 +2000,10 @@
           <span class="feed-chip">Bedrooms: 3 BHK</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showSell()">View Property</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2188,9 +2242,11 @@
           <span class="feed-chip">Purpose: Buy</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showBuy()">View Profile</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn" title="View profile" onclick="showBuy()"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">View Profile</span></button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2216,9 +2272,10 @@
           <span class="feed-chip">Bedrooms: 2 BHK</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showSell()">View Property</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2243,9 +2300,11 @@
           <span class="feed-chip">Purpose: Buy</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showBuy()">View Profile</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn" title="View profile" onclick="showBuy()"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">View Profile</span></button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2271,9 +2330,10 @@
           <span class="feed-chip">Bedrooms: 3 BHK</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showSell()">View Property</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2299,8 +2359,10 @@
         </div>
         <div class="feed-actions">
           <button class="feed-btn" onclick="showBuy()">View Profile</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -2326,9 +2388,10 @@
           <span class="feed-chip">Bedrooms: 3 BHK</span>
         </div>
         <div class="feed-actions">
-          <button class="feed-btn" onclick="showSell()">View Property</button>
-          <button class="feed-btn primary" onclick="handleConnect(this)">Connect</button>
-          <button class="feed-btn" onclick="handleMessage(this)">Message</button>
+          <button class="feed-btn primary" title="Like post" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>
+          <button class="feed-btn" title="Repost" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>
+          <button class="feed-btn" title="Message" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>
+          <button class="feed-btn" title="Share" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>
         </div>
       </div>
 
@@ -3179,6 +3242,39 @@
     showToast('Messaging coming soon');
   }
 
+  function handleLike(btn){
+    if(!canExplore()) return;
+    const isLiked = btn.classList.toggle('active');
+    const label = btn.querySelector('.feed-btn-label');
+    if(label) label.textContent = isLiked ? 'Liked' : 'Like';
+    showToast(isLiked ? 'Post liked' : 'Like removed');
+  }
+
+  function handleRepost(btn){
+    if(!canExplore()) return;
+    const isReposted = btn.classList.toggle('active');
+    const label = btn.querySelector('.feed-btn-label');
+    if(label) label.textContent = isReposted ? 'Reposted' : 'Repost';
+    showToast(isReposted ? 'Post reposted' : 'Repost removed');
+  }
+
+  async function handleShare(btn){
+    if(!canExplore()) return;
+    const shareData = { title: 'SmartProperty post', url: window.location.href };
+    try{
+      if(navigator.share){
+        await navigator.share(shareData);
+      } else if(navigator.clipboard){
+        await navigator.clipboard.writeText(window.location.href);
+        showToast('Link copied to clipboard');
+      } else {
+        showToast('Share this page from your browser');
+      }
+    } catch(error){
+      if(error.name !== 'AbortError') showToast('Sharing is unavailable right now');
+    }
+  }
+
   function handleDeepAction(actionName){
     if(!canExplore()) return;
     showToast(actionName + ' is ready for your profile');
@@ -3258,8 +3354,8 @@
       const isVideo = type === 'video';
       const safeUrl = escapeAttribute(url);
       const mediaMarkup = isVideo
-        ? '<video src="' + safeUrl + '" muted playsinline preload="metadata" data-video="true"></video>' +
-          '<div class="community-media-overlay"><div class="community-media-controls"><button class="community-media-btn" type="button" data-video-action="toggle-play">Play</button><button class="community-media-btn" type="button" data-video-action="toggle-mute">Mute</button></div></div>'
+        ? '<video src="' + safeUrl + '" muted autoplay loop playsinline preload="metadata" data-video="true"></video>' +
+          '<div class="community-media-overlay"><div class="community-media-controls"><button class="community-media-btn" type="button" data-video-action="toggle-play">Pause</button><button class="community-media-btn" type="button" data-video-action="toggle-mute">Mute</button></div></div>'
         : '<img src="' + safeUrl + '" alt="Post media" />';
       return '<div class="community-media-slide ' + (index === 0 ? 'active' : '') + '" data-index="' + index + '">' + mediaMarkup + '</div>';
     }).join('');
@@ -3292,8 +3388,14 @@
         const video = slide && slide.querySelector('video');
         if (!video) return;
         video.muted = true;
+        video.autoplay = true;
+        video.loop = true;
         video.playsInline = true;
         video.controls = false;
+        video.play().catch(function(){
+          const playButton = slide.querySelector('[data-video-action="toggle-play"]');
+          if (playButton) playButton.textContent = 'Play';
+        });
         button.addEventListener('click', function(){
           const action = button.getAttribute('data-video-action');
           if (action === 'toggle-play') {
@@ -3401,12 +3503,18 @@
       ? formatCommunityValue(post.budgetMin, 'Any') + ' - ' + formatCommunityValue(post.budgetMax, 'Any')
       : formatCommunityValue(post.price, 'Contact seller');
     const detailLabel = role === 'buyer' ? 'Budget' : 'Price';
-    const actionLabel = role === 'buyer' ? 'View profile' : 'View property';
+    const intentMarkup = role === 'buyer' ? '<span class="community-intent-pill">&#8981; Looking for</span>' : '';
+    const actionMarkup = '<div class="feed-actions">' +
+      '<button class="feed-btn primary" title="Like post" type="button" onclick="handleLike(this)"><span class="feed-btn-icon" aria-hidden="true">&#9825;</span><span class="feed-btn-label">Like</span></button>' +
+      '<button class="feed-btn" title="Repost" type="button" onclick="handleRepost(this)"><span class="feed-btn-icon" aria-hidden="true">&#8635;</span><span class="feed-btn-label">Repost</span></button>' +
+      '<button class="feed-btn" title="Message" type="button" onclick="handleMessage(this)"><span class="feed-btn-icon" aria-hidden="true">&#9993;</span><span class="feed-btn-label">Message</span></button>' +
+      '<button class="feed-btn" title="Share" type="button" onclick="handleShare(this)"><span class="feed-btn-icon" aria-hidden="true">&#8599;</span><span class="feed-btn-label">Share</span></button>' +
+      '</div>';
     const postedTime = formatCommunityTime(post.createdAt || post.updatedAt);
     return '<div class="feed-post dynamic-community-post" data-community-role="' + role + '">' +
       '<div class="feed-post-head"><div class="feed-post-who">' +
       getAvatarMarkup(user, role, role === 'buyer' ? 'Buyer' : 'Seller') +
-      '<div><div class="feed-name-row"><span class="feed-name">' + name + '</span></div><div class="feed-location">&#9906; ' + location + '</div></div></div><span class="community-intent-pill">&#8981; ' + (role === 'buyer' ? 'Looking for' : 'For sale') + '</span></div>' +
+      '<div><div class="feed-name-row"><span class="feed-name">' + name + '</span></div><div class="feed-location">' + location + '</div></div></div>' + intentMarkup + '</div>' +
       '<p class="feed-text">&quot;' + description + '&quot;</p>' +
       mediaMarkup +
       '<div class="community-detail-grid">' +
@@ -3414,7 +3522,7 @@
       '<div class="community-detail-tile type"><span class="community-detail-label">Property type</span><span class="community-detail-value">' + type + '</span></div>' +
       '<div class="community-detail-tile bedrooms"><span class="community-detail-label">Bedrooms</span><span class="community-detail-value">' + bedrooms + '</span></div>' +
       '</div>' +
-      '<div class="community-post-meta"><span class="community-post-time">&#9711; ' + postedTime + '</span><button class="feed-btn" type="button" onclick="' + (role === 'buyer' ? 'showBuy()' : 'showSell()') + '">' + actionLabel + ' &#8599;</button></div></div>';
+      '<div class="community-post-meta"><span class="community-post-time">&#9711; ' + postedTime + '</span></div>' + actionMarkup + '</div>';
   }
 
   async function renderCommunityPosts(){

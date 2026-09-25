@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>SmartProperty</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital@0;1&family=Inter:wght@400;500;600&display=swap');
 
@@ -981,6 +982,8 @@
   .modal-card{
     width: 100%;
     max-width: 460px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
     background: var(--white);
     border: 1px solid rgba(0,0,0,0.08);
     border-radius: 20px;
@@ -1053,6 +1056,69 @@
 
   .modal-field input::placeholder{ color: var(--text-muted); }
   .modal-field input:focus{ border-color: var(--text-dark); }
+
+  .auth-provider-btn{
+    width:100%;
+    padding:14px 16px;
+    margin-bottom:22px;
+    border:1px solid rgba(0,0,0,0.15);
+    border-radius:10px;
+    background:var(--bg-cream);
+    color:var(--text-dark);
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+  }
+
+  .auth-divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:0 0 22px;
+    color:var(--text-muted);
+    font-size:13px;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:rgba(0,0,0,0.15);
+  }
+
+  .auth-link-row{
+    display:flex;
+    justify-content:flex-end;
+    margin:-8px 0 14px;
+  }
+
+  .auth-link{
+    border:0;
+    padding:0;
+    background:none;
+    color:var(--text-dark);
+    font:inherit;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  .auth-field-hint{
+    margin-top:-12px;
+    margin-bottom:18px;
+    color:var(--text-muted);
+    font-size:12px;
+    text-align:left;
+  }
+
+  .auth-status{
+    min-height:18px;
+    margin-bottom:14px;
+    color:var(--text-muted);
+    font-size:13px;
+    text-align:left;
+  }
 
   .modal-login-btn{
     width: 100%;
@@ -2417,17 +2483,21 @@
     <div class="modal-title">Welcome back</div>
     <div class="modal-subtitle">Sign in to continue your property journey.</div>
 
+    <button type="button" class="auth-provider-btn" onclick="handleGoogleSignIn()"><span style="color:#B3453B; margin-right:12px; font-weight:700;">G</span>Continue with Google</button>
+    <div class="auth-divider">or continue with email</div>
+
     <form id="signInForm" onsubmit="handleSignIn(event)">
       <div class="modal-field">
-        <label for="modal-email">Email</label>
+        <label for="modal-email">Email address</label>
         <input type="email" id="modal-email" placeholder="you@example.com" required>
       </div>
       <div class="modal-field">
         <label for="modal-password">Password</label>
         <input type="password" id="modal-password" placeholder="Enter your password" required>
       </div>
+      <div class="auth-link-row"><button class="auth-link" type="button" onclick="handleForgotPassword()">Forgot password?</button></div>
       <div id="signInError" style="color:#B3453B; font-size:13px; margin-bottom:14px; display:none;"></div>
-      <button type="submit" class="modal-login-btn" id="signInSubmitBtn">Login</button>
+      <button type="submit" class="modal-login-btn" id="signInSubmitBtn">Sign in</button>
     </form>
 
     <a class="modal-create" onclick="openCreateAccount()">Create account</a>
@@ -2441,24 +2511,89 @@
     <div class="modal-title">Create account</div>
     <div class="modal-subtitle">Start your property journey with us.</div>
 
+    <button type="button" class="auth-provider-btn" onclick="handleGoogleSignIn()"><span style="color:#B3453B; margin-right:12px; font-weight:700;">G</span>Continue with Google</button>
+    <div class="auth-divider">or continue with email</div>
+
     <form id="createAccountForm" onsubmit="handleCreateAccount(event)">
       <div class="modal-field">
         <label for="create-name">Full name</label>
-        <input type="text" id="create-name" placeholder="Your name">
+        <input type="text" id="create-name" placeholder="Your name" required autocomplete="name">
       </div>
       <div class="modal-field">
-        <label for="create-email">Email</label>
-        <input type="email" id="create-email" placeholder="you@example.com" required>
+        <label for="create-email">Email address</label>
+        <input type="email" id="create-email" placeholder="you@example.com" required autocomplete="email">
       </div>
+      <div class="modal-field">
+        <label for="create-phone">Mobile number</label>
+        <input type="tel" id="create-phone" placeholder="+91 98765 43210" autocomplete="tel" pattern="\+[0-9][0-9 ()-]{7,19}" title="Include your country code, for example +91 98765 43210">
+      </div>
+      <div class="auth-field-hint">Include your country code. Phone verification requires SMS setup.</div>
       <div class="modal-field">
         <label for="create-password">Password</label>
-        <input type="password" id="create-password" placeholder="Create a password" required minlength="6">
+        <input type="password" id="create-password" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
       </div>
       <div id="createAccountError" style="color:#B3453B; font-size:13px; margin-bottom:14px; display:none;"></div>
       <button type="submit" class="modal-login-btn" id="createAccountSubmitBtn">Create Account</button>
     </form>
 
     <a class="modal-signin-link" onclick="switchToSignIn()">Already have an account? Sign in</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="forgotPasswordModal">
+  <div class="modal-card">
+    <button class="modal-close" type="button" onclick="closeForgotPassword()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">Reset your password</div>
+    <div class="modal-subtitle">Enter your email and we’ll send you a secure reset link.</div>
+    <form id="forgotPasswordForm" onsubmit="requestPasswordReset(event)">
+      <div class="modal-field">
+        <label for="reset-email">Email address</label>
+        <input type="email" id="reset-email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="auth-status" id="forgotPasswordStatus" aria-live="polite"></div>
+      <button type="submit" class="modal-login-btn" id="forgotPasswordSubmitBtn">Send reset link</button>
+    </form>
+    <a class="modal-signin-link" onclick="closeForgotPassword(); openSignIn()">Back to sign in</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="resetPasswordModal">
+  <div class="modal-card">
+    <button class="modal-close" type="button" onclick="closeResetPassword()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">Choose a new password</div>
+    <div class="modal-subtitle">Use at least 8 characters for your new password.</div>
+    <form id="resetPasswordForm" onsubmit="resetPassword(event)">
+      <div class="modal-field">
+        <label for="reset-new-password">New password</label>
+        <input type="password" id="reset-new-password" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
+      </div>
+      <div class="modal-field">
+        <label for="reset-confirm-password">Confirm password</label>
+        <input type="password" id="reset-confirm-password" placeholder="Enter it again" required minlength="8" autocomplete="new-password">
+      </div>
+      <div class="auth-status" id="resetPasswordStatus" aria-live="polite"></div>
+      <button type="submit" class="modal-login-btn" id="resetPasswordSubmitBtn">Update password</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="phoneVerificationModal">
+  <div class="modal-card">
+    <button class="modal-close" type="button" onclick="skipPhoneVerification()">&times;</button>
+    <div class="modal-brand">SMARTPROPERTY</div>
+    <div class="modal-title">Verify your mobile</div>
+    <div class="modal-subtitle" id="phoneVerificationMessage">Enter the code sent to your phone.</div>
+    <form id="phoneVerificationForm" onsubmit="verifyPhoneCode(event)">
+      <div class="modal-field">
+        <label for="phone-verification-code">Verification code</label>
+        <input type="text" id="phone-verification-code" placeholder="Enter code" required inputmode="numeric" pattern="[0-9]{4,10}" autocomplete="one-time-code">
+      </div>
+      <div class="auth-status" id="phoneVerificationStatus" aria-live="polite"></div>
+      <button type="submit" class="modal-login-btn" id="phoneVerificationSubmitBtn">Verify number</button>
+    </form>
+    <div class="auth-link-row" style="justify-content:center; margin:16px 0 0;"><button class="auth-link" type="button" onclick="resendPhoneCode()">Resend code</button><button class="auth-link" type="button" onclick="skipPhoneVerification()">Skip for now</button></div>
   </div>
 </div>
 
@@ -2480,6 +2615,10 @@
   // Point this at your running backend (see /server folder).
   const API_BASE_URL = '/api';
   const editingPost = { role: null, id: null };
+  let googleClientId = '';
+  let googleTokenClient = null;
+  let pendingPasswordResetToken = '';
+  let pendingPhoneVerificationUser = null;
 
   function getToken(){
     return localStorage.getItem('sp_token');
@@ -3174,6 +3313,7 @@
       setAuthSession(data.token, data.user);
       closeSignIn();
       showToast('Welcome back, ' + (data.user.name || data.user.email));
+      await beginPhoneVerification(data.user);
     }catch(err){
       errorEl.textContent = err.message.includes('Failed to fetch')
         ? 'Could not reach the server. Is the backend running?'
@@ -3181,8 +3321,232 @@
       errorEl.style.display = 'block';
     }finally{
       btn.disabled = false;
-      btn.textContent = 'Login';
+      btn.textContent = 'Sign in';
     }
+  }
+
+  function showAuthError(message){
+    const createIsOpen = document.getElementById('createAccountModal').classList.contains('active');
+    const errorEl = document.getElementById(createIsOpen ? 'createAccountError' : 'signInError');
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+  }
+
+  async function loadGoogleSignIn(){
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/google/config');
+      const config = await response.json();
+      googleClientId = config.clientId || '';
+      if(googleClientId && window.google && window.google.accounts){
+        googleTokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: googleClientId,
+          scope: 'openid email profile',
+          callback: handleGoogleToken
+        });
+      }
+    }catch(error){
+      googleClientId = '';
+    }
+  }
+
+  function handleGoogleSignIn(){
+    if(!googleClientId){
+      showAuthError('Google sign-in is not configured. Add GOOGLE_CLIENT_ID to the server environment.');
+      return;
+    }
+    if(!googleTokenClient){
+      showAuthError('Google sign-in is still loading. Please try again in a moment.');
+      return;
+    }
+    googleTokenClient.requestAccessToken();
+  }
+
+  async function handleGoogleToken(response){
+    if(!response || !response.access_token){
+      showAuthError('Google sign-in was cancelled or could not be completed.');
+      return;
+    }
+    try{
+      const result = await fetch(API_BASE_URL + '/auth/google', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify({ accessToken:response.access_token })
+      });
+      const data = await result.json();
+      if(!result.ok) throw new Error(data.error || 'Unable to sign in with Google.');
+      setAuthSession(data.token, data.user);
+      closeSignIn();
+      closeCreateAccount();
+      showToast('Welcome, ' + (data.user.name || data.user.email));
+      await beginPhoneVerification(data.user);
+    }catch(error){
+      showAuthError(error.message || 'Unable to sign in with Google.');
+    }
+  }
+
+  function handleForgotPassword(){
+    const email = document.getElementById('modal-email').value.trim();
+    closeSignIn();
+    document.getElementById('forgotPasswordModal').classList.add('active');
+    document.getElementById('forgotPasswordStatus').textContent = '';
+    if(email) document.getElementById('reset-email').value = email;
+  }
+
+  async function beginPhoneVerification(user){
+    if(!user.phone || user.phoneVerified){
+      openRoleModal();
+      return;
+    }
+    pendingPhoneVerificationUser = user;
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/phone/send-code', {
+        method:'POST',
+        headers:{ 'Authorization':'Bearer ' + getToken() }
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Could not send a verification code.');
+      document.getElementById('phoneVerificationMessage').textContent = data.message;
+      document.getElementById('phoneVerificationStatus').textContent = '';
+      document.getElementById('phoneVerificationModal').classList.add('active');
+    }catch(error){
+      showToast(error.message || 'SMS verification is unavailable.');
+      openRoleModal();
+    }
+  }
+
+  async function resendPhoneCode(){
+    const status = document.getElementById('phoneVerificationStatus');
+    status.textContent = '';
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/phone/send-code', {
+        method:'POST',
+        headers:{ 'Authorization':'Bearer ' + getToken() }
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Could not send a verification code.');
+      document.getElementById('phoneVerificationMessage').textContent = data.message;
+    }catch(error){
+      status.textContent = error.message || 'Could not send a verification code.';
+    }
+  }
+
+  async function verifyPhoneCode(event){
+    event.preventDefault();
+    const status = document.getElementById('phoneVerificationStatus');
+    const button = document.getElementById('phoneVerificationSubmitBtn');
+    status.textContent = '';
+    button.disabled = true;
+    button.textContent = 'Verifying...';
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/phone/verify-code', {
+        method:'POST',
+        headers:{
+          'Authorization':'Bearer ' + getToken(),
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({ code:document.getElementById('phone-verification-code').value.trim() })
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Could not verify this number.');
+      const user = getAuthUser() || pendingPhoneVerificationUser || {};
+      user.phoneVerified = true;
+      localStorage.setItem('sp_user', JSON.stringify(user));
+      pendingPhoneVerificationUser = null;
+      document.getElementById('phoneVerificationModal').classList.remove('active');
+      document.getElementById('phoneVerificationForm').reset();
+      showToast(data.message || 'Mobile number verified.');
+      openRoleModal();
+    }catch(error){
+      status.textContent = error.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : error.message;
+    }finally{
+      button.disabled = false;
+      button.textContent = 'Verify number';
+    }
+  }
+
+  function skipPhoneVerification(){
+    pendingPhoneVerificationUser = null;
+    document.getElementById('phoneVerificationModal').classList.remove('active');
+    openRoleModal();
+  }
+
+  function closeForgotPassword(){
+    document.getElementById('forgotPasswordModal').classList.remove('active');
+  }
+
+  function closeResetPassword(){
+    document.getElementById('resetPasswordModal').classList.remove('active');
+  }
+
+  async function requestPasswordReset(event){
+    event.preventDefault();
+    const status = document.getElementById('forgotPasswordStatus');
+    const button = document.getElementById('forgotPasswordSubmitBtn');
+    status.textContent = '';
+    button.disabled = true;
+    button.textContent = 'Sending...';
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/forgot-password', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify({ email:document.getElementById('reset-email').value.trim() })
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Unable to send a reset link.');
+      status.textContent = data.message || 'Check your email for a password reset link.';
+    }catch(error){
+      status.textContent = error.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : error.message;
+    }finally{
+      button.disabled = false;
+      button.textContent = 'Send reset link';
+    }
+  }
+
+  async function resetPassword(event){
+    event.preventDefault();
+    const status = document.getElementById('resetPasswordStatus');
+    const button = document.getElementById('resetPasswordSubmitBtn');
+    const password = document.getElementById('reset-new-password').value;
+    const confirmation = document.getElementById('reset-confirm-password').value;
+    if(password !== confirmation){
+      status.textContent = 'Passwords do not match.';
+      return;
+    }
+    status.textContent = '';
+    button.disabled = true;
+    button.textContent = 'Updating...';
+    try{
+      const response = await fetch(API_BASE_URL + '/auth/reset-password', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify({ token:pendingPasswordResetToken, password })
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Unable to reset the password.');
+      pendingPasswordResetToken = '';
+      closeResetPassword();
+      openSignIn();
+      showToast(data.message || 'Password updated. You can now sign in.');
+    }catch(error){
+      status.textContent = error.message.includes('Failed to fetch')
+        ? 'Could not reach the server. Is the backend running?'
+        : error.message;
+    }finally{
+      button.disabled = false;
+      button.textContent = 'Update password';
+    }
+  }
+
+  function loadPasswordReset(){
+    const params = new URLSearchParams(window.location.search);
+    pendingPasswordResetToken = params.get('resetToken') || '';
+    if(!pendingPasswordResetToken) return;
+    window.history.replaceState(null, '', window.location.pathname + window.location.hash);
+    document.getElementById('resetPasswordModal').classList.add('active');
   }
 
   async function handleCreateAccount(event){
@@ -3190,6 +3554,7 @@
     const name = document.getElementById('create-name').value.trim();
     const email = document.getElementById('create-email').value.trim();
     const password = document.getElementById('create-password').value;
+    const phone = document.getElementById('create-phone').value.trim();
     const errorEl = document.getElementById('createAccountError');
     const btn = document.getElementById('createAccountSubmitBtn');
     errorEl.style.display = 'none';
@@ -3200,7 +3565,7 @@
       const res = await fetch(API_BASE_URL + '/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password, phone })
       });
       const data = await res.json();
       if(!res.ok){
@@ -3208,7 +3573,7 @@
       }
       setAuthSession(data.token, data.user);
       closeCreateAccount();
-      openRoleModal();
+      await beginPhoneVerification(data.user);
     }catch(err){
       errorEl.textContent = err.message.includes('Failed to fetch')
         ? 'Could not reach the server. Is the backend running?'
@@ -3601,6 +3966,19 @@
   });
   document.getElementById('roleModal').addEventListener('click', function(e){
     if(e.target === this){ closeRoleModal(); }
+  });
+  document.getElementById('forgotPasswordModal').addEventListener('click', function(e){
+    if(e.target === this){ closeForgotPassword(); }
+  });
+  document.getElementById('resetPasswordModal').addEventListener('click', function(e){
+    if(e.target === this){ closeResetPassword(); }
+  });
+  document.getElementById('phoneVerificationModal').addEventListener('click', function(e){
+    if(e.target === this){ skipPhoneVerification(); }
+  });
+  window.addEventListener('load', function(){
+    loadGoogleSignIn();
+    loadPasswordReset();
   });
   updateAuthUI();
   loadSellerProfile();

@@ -14,9 +14,26 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true
     },
+    phone: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    phoneVerified: {
+      type: Boolean,
+      default: false
+    },
     password: {
       type: String,
       required: true
+    },
+    passwordResetTokenHash: {
+      type: String,
+      default: ''
+    },
+    passwordResetExpiresAt: {
+      type: Date,
+      default: null
     },
     profilePhoto: {
       type: String,

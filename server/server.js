@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
 dotenv.config({ path: __dirname + '/.env' });
+dotenv.config({ path: path.join(__dirname, '..', '.env'), override: false });
 
 const authRoutes = require('./routes/auth');
 const buyerRoutes = require('./routes/buyer');
